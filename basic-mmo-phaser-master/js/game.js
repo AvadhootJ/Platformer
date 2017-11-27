@@ -7,17 +7,18 @@ var Game = {};
 var platforms;
 var cursors;
 var player;
-var playerStartX = 500;
-var playerStartY = 500;
+var playerStartX = 100;
+var playerStartY = 600;
 var recordedID = 0;
 
-var randomNameTag = randomInt(1, 9999999);
+var countDownNumber = 10;
+var text = 0;
 
 function randomInt (low, high) {
     return Math.floor(Math.random() * (high - low) + low);
 }
 
-var playerName = "player" + String(randomNameTag);
+var playerName = 'player';// + String(randomNameTag);
 
 Game.init = function(){
     game.stage.disableVisibilityChange = true;
@@ -27,11 +28,12 @@ Game.preload = function() {
 	game.load.image('sky', 'assets/sky.png');
     game.load.image('ground', 'assets/platform.png');
     game.load.image('star', 'assets/star.png');
-    game.load.spritesheet(randomNameTag, 'assets/dude.png', 32, 48);
+    game.load.spritesheet('player', 'assets/dude.png', 32, 48);
     game.load.image('sprite','assets/sprites/sprite.png');
 };
 
 Game.create = function(){
+
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.add.sprite(0, 0, 'sky');
     platforms = game.add.group();
@@ -43,7 +45,7 @@ Game.create = function(){
     ledge.body.immovable = true;
     ledge = platforms.create(-150, 250, 'ground');
     ledge.body.immovable = true;
-    player = game.add.sprite(playerStartX, game.world.height - playerStartY, randomNameTag);
+    player = game.add.sprite(playerStartX, game.world.height - playerStartY, 'player');
     game.physics.arcade.enable(player);
     player.body.bounce.y = 0.2;
     player.body.gravity.y = 300;
@@ -54,8 +56,24 @@ Game.create = function(){
 	Game.playerMap = {};	
     Client.askNewPlayer(playerStartX, game.world.height - playerStartY);
 
-	cursors = game.input.keyboard.createCursorKeys();
+    cursors = game.input.keyboard.createCursorKeys();
+    
+    //create game timer
+    text = game.add.text(game.world.centerX, 50, 'Timer till safehouses closes:  ', { font: "32px Arial", fill: "#ffffff", align: "center" });
+    text.anchor.setTo(0.5, 0.5);
+    game.time.events.loop(Phaser.Timer.SECOND, updateCounter, this);
 };
+
+function updateCounter() {
+    countDownNumber--;
+    if (countDownNumber <= 0) {
+        countDownNumber = 10;}
+    text.setText('Timer till safehouses closes:' + countDownNumber);    
+}
+
+function updateCounterFromServerTime(time) {
+    countDownNumber = time;  
+}
 
 Game.update = function() {
 	
@@ -90,9 +108,8 @@ Game.addnewID = function(id){
 }
 
 Game.addNewPlayer = function(id,x,y){
-	//if (id != recordedID) {
-        Game.playerMap[id] = game.add.sprite(x, game.world.height - y, randomNameTag);//game.add.sprite(x,y,'sprite');
-    //}
+    Game.playerMap[id] = game.add.sprite(x, game.world.height - y, 'player');
+    Game.playerMap[id].alpha = 0.3;
 };
 
 Game.movePlayer = function(id,x,y){

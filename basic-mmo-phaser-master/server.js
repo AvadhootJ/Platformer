@@ -3,6 +3,13 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io').listen(server);
 
+var firstPlayerJoined = 0;
+var timerlength = 10;
+var countdownTimer = timerlength;
+var totalNumberOfPlayers = 0;
+
+setInterval(updateTimer, 1000);
+
 app.use('/css',express.static(__dirname + '/css'));
 app.use('/js',express.static(__dirname + '/js'));
 app.use('/assets',express.static(__dirname + '/assets'));
@@ -17,12 +24,23 @@ server.listen(process.env.PORT || 8080,function(){
     console.log('Listening on '+server.address().port);
 });
 
-io.on('connection',function(socket){
-
+io.on('connection',function(socket){    
+        
     socket.on('newplayer',function(data){
+        totalNumberOfPlayers++;
+        //if very first player, start countdown for very first time
+        if (totalNumberOfPlayers > 0 && firstPlayerJoined == 0) {
+            //console.log('very first player joined');
+            countdownTimer = timerlength;
+            firstPlayerJoined = 1;
+        } else {
+            //console.log('a new player joined');            
+        }
+
         socket.player = {id: server.lastPlayderID++,x: -50,y: -50};
 
-        socket.emit('allplayers',getAllPlayers()); //send newly connect player the list of already connected players
+        socket.emit('getTimerFromServer', countdownTimer); //send newly connected player current time
+        socket.emit('allplayers',getAllPlayers()); //send newly connected player the list of already connected players
         socket.emit('setID', socket.player);
         socket.broadcast.emit('newplayer',socket.player); //send message to all connected sockets except socket that triggered new connection
         
@@ -35,13 +53,28 @@ io.on('connection',function(socket){
 
         socket.on('disconnect',function(){
             io.emit('remove',socket.player.id);
+            totalNumberOfPlayers--;
+            //console.log('player left game');
+            if (totalNumberOfPlayers == 0 && firstPlayerJoined == 1) {
+                //console.log('last player has left the game');
+                countdownTimer = timerlength;
+                firstPlayerJoined = 0;
+            }
         });
     });
 
-    socket.on('test',function(){
-        console.log('test received');
-    });
+    //socket.on('test',function(){
+    //    console.log('test received');
+    //});
 });
+
+function updateTimer() {
+    //console.log(countdownTimer);
+    countdownTimer--;
+    if (countdownTimer < 0) {
+    countdownTimer = timerlength;
+    }
+}
 
 function getAllPlayers(){
     var players = [];
