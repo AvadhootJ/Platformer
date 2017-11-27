@@ -10,9 +10,13 @@ var player;
 var playerStartX = 100;
 var playerStartY = 600;
 var recordedID = 0;
+var safehouse1;
+var safehouse2;
+var whichSafeHouseToSeek = 0;
 
 var countDownNumber = 10;
-var text = 0;
+var timertext = 0;
+var safeText = 0;
 
 function randomInt (low, high) {
     return Math.floor(Math.random() * (high - low) + low);
@@ -30,16 +34,19 @@ Game.preload = function() {
     game.load.image('star', 'assets/star.png');
     game.load.spritesheet('player', 'assets/dude.png', 32, 48);
     game.load.image('sprite','assets/sprites/sprite.png');
+    game.load.image('safehouse1', 'assets/safehouse1.png');
+    game.load.image('safehouse2', 'assets/safehouse2.png');
 };
 
 Game.create = function(){
 
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.add.sprite(0, 0, 'sky');
+    safehouse1 = game.add.sprite(50, 200, 'safehouse1');
+    safehouse2 = game.add.sprite(300, 200, 'safehouse2');
     platforms = game.add.group();
     platforms.enableBody = true;
     var ground = platforms.create(0, game.world.height - 64, 'ground');
-    ground.scale.setTo(2, 2);
     ground.body.immovable = true;
     var ledge = platforms.create(400, 400, 'ground');
     ledge.body.immovable = true;
@@ -47,28 +54,71 @@ Game.create = function(){
     ledge.body.immovable = true;
     player = game.add.sprite(playerStartX, game.world.height - playerStartY, 'player');
     game.physics.arcade.enable(player);
-    player.body.bounce.y = 0.2;
-    player.body.gravity.y = 300;
+    player.body.bounce.y = 0.1;
+    player.body.gravity.y = 500;
     player.body.collideWorldBounds = true;
     player.animations.add('left', [0, 1, 2, 3], 10, true);
     player.animations.add('right', [5, 6, 7, 8], 10, true);
-	
+
 	Game.playerMap = {};	
     Client.askNewPlayer(playerStartX, game.world.height - playerStartY);
 
     cursors = game.input.keyboard.createCursorKeys();
-    
+
     //create game timer
-    text = game.add.text(game.world.centerX, 50, 'Timer till safehouses closes:  ', { font: "32px Arial", fill: "#ffffff", align: "center" });
-    text.anchor.setTo(0.5, 0.5);
-    game.time.events.loop(Phaser.Timer.SECOND, updateCounter, this);
+    timertext = game.add.text(game.world.centerX, 50, 'Timer till safehouses closes:  ', { font: "32px Arial", fill: "#ffffff", align: "center" });
+    timertext.anchor.setTo(0.5, 0.5);
+    safeText = game.add.text(game.world.centerX, 100, '', { font: "32px Arial", fill: "#000000", align: "center" });
+    safeText.anchor.setTo(0.5, 0.5);    
+    game.time.events.loop(Phaser.Timer.SECOND, updateCounter, this);    
+    showSafe();
 };
+
+function showNotSafe() {
+    safeText.setText('You are NOT SAFE!\n Seek shelter in other safehouse!'); 
+    safeText.addColor('#ff0000', 0);   
+}
+
+function showSafe() {
+    safeText.setText('You are SAFE!\n Get ready to seek shelter in other safehouse!');    
+    safeText.addColor('#00ff00', 0);       
+}
+
+function collisionsafehouse1() {
+
+    var playerBox = player.getBounds();
+    var safehouse1Box = safehouse1.getBounds();
+    
+    if (Phaser.Rectangle.intersects(playerBox, safehouse1Box)) {
+        showSafe();
+    } else {
+        showNotSafe();
+    }
+}
+
+function collisionsafehouse2() {
+    
+    var playerBox = player.getBounds();
+    var safehouse2Box = safehouse2.getBounds();
+    
+    if (Phaser.Rectangle.intersects(playerBox, safehouse2Box)) {
+        showSafe();
+    } else {
+        showNotSafe();
+    }
+ }
 
 function updateCounter() {
     countDownNumber--;
     if (countDownNumber <= 0) {
-        countDownNumber = 10;}
-    text.setText('Timer till safehouses closes:' + countDownNumber);    
+        countDownNumber = 10;
+        if (whichSafeHouseToSeek) {
+            whichSafeHouseToSeek = 0;
+        } else if (whichSafeHouseToSeek == 0) {
+            whichSafeHouseToSeek = 1;
+        }
+    }
+    timertext.setText('Timer till safehouses closes:' + countDownNumber);    
 }
 
 function updateCounterFromServerTime(time) {
@@ -76,7 +126,13 @@ function updateCounterFromServerTime(time) {
 }
 
 Game.update = function() {
-	
+
+    if (whichSafeHouseToSeek) {
+        collisionsafehouse1();
+    } else {
+        collisionsafehouse2();
+    }
+
     game.physics.arcade.collide(player, platforms);
 
     player.body.velocity.x = 0;
