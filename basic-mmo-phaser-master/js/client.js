@@ -5,10 +5,10 @@
 var Client = {};
 Client.socket = io.connect();
 
-Client.sendTest = function(){
-    console.log("test sent");
-    Client.socket.emit('test');
-};
+//Client.sendTest = function(){
+//    console.log("test sent");
+//    Client.socket.emit('test');
+//};
 
 Client.askNewPlayer = function(x, y){
     Client.socket.emit('newplayer', {x:x, y:y});
@@ -17,6 +17,10 @@ Client.askNewPlayer = function(x, y){
 Client.sendPos = function(x,y){
   Client.socket.emit('sendPos',{x:x,y:y});
 };
+
+Client.socket.on('getTimerFromServer', function(time){
+    updateCounterFromServerTime(time);
+});
 
 Client.socket.on('setID',function(data){
     Game.addnewID(data.id);
