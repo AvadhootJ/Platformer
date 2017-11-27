@@ -22,6 +22,10 @@ Client.socket.on('getTimerFromServer', function(time){
     updateCounterFromServerTime(time);
 });
 
+Client.socket.on('getWhichSafeHouseFromServer', function(whichSafeHouse){
+    updateWhichSafeHouse(whichSafeHouse);
+});
+
 Client.socket.on('setID',function(data){
     Game.addnewID(data.id);
 });
