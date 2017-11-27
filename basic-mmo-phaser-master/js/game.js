@@ -42,8 +42,8 @@ Game.create = function(){
 
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.add.sprite(0, 0, 'sky');
-    safehouse1 = game.add.sprite(50, 200, 'safehouse1');
-    safehouse2 = game.add.sprite(300, 200, 'safehouse2');
+    safehouse1 = game.add.sprite(50, 400, 'safehouse1');
+    safehouse2 = game.add.sprite(300, 400, 'safehouse2');
     platforms = game.add.group();
     platforms.enableBody = true;
     var ground = platforms.create(0, game.world.height - 64, 'ground');
@@ -123,6 +123,10 @@ function updateCounter() {
 
 function updateCounterFromServerTime(time) {
     countDownNumber = time;  
+}
+
+function updateWhichSafeHouse(whichSafeHouse) {
+    whichSafeHouseToSeek = whichSafeHouse;
 }
 
 Game.update = function() {

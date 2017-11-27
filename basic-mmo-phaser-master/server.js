@@ -7,6 +7,7 @@ var firstPlayerJoined = 0;
 var timerlength = 10;
 var countdownTimer = timerlength;
 var totalNumberOfPlayers = 0;
+var whichSafeHouseIsSafe = 0;
 
 setInterval(updateTimer, 1000);
 
@@ -40,6 +41,7 @@ io.on('connection',function(socket){
         socket.player = {id: server.lastPlayderID++,x: -50,y: -50};
 
         socket.emit('getTimerFromServer', countdownTimer); //send newly connected player current time
+        socket.emit('getWhichSafeHouseFromServer', whichSafeHouseIsSafe);
         socket.emit('allplayers',getAllPlayers()); //send newly connected player the list of already connected players
         socket.emit('setID', socket.player);
         socket.broadcast.emit('newplayer',socket.player); //send message to all connected sockets except socket that triggered new connection
@@ -72,7 +74,12 @@ function updateTimer() {
     //console.log(countdownTimer);
     countdownTimer--;
     if (countdownTimer < 0) {
-    countdownTimer = timerlength;
+        countdownTimer = timerlength;
+        if (whichSafeHouseIsSafe) {
+            whichSafeHouseIsSafe = 0;
+        } else if (whichSafeHouseIsSafe == 0) {
+            whichSafeHouseIsSafe = 1;
+        }
     }
 }
 
