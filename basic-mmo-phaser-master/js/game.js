@@ -90,9 +90,8 @@ Game.addnewID = function(id){
 }
 
 Game.addNewPlayer = function(id,x,y){
-	//if (id != recordedID) {
-        Game.playerMap[id] = game.add.sprite(x, game.world.height - y, randomNameTag);//game.add.sprite(x,y,'sprite');
-    //}
+    Game.playerMap[id] = game.add.sprite(x, game.world.height - y, randomNameTag);
+    Game.playerMap[id].alpha = 0.3;
 };
 
 Game.movePlayer = function(id,x,y){
