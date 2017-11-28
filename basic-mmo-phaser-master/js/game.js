@@ -8,7 +8,7 @@ var platforms;
 var cursors;
 var player;
 var playerStartX = 100;
-var playerStartY = 600;
+var playerStartY = 500;
 var recordedID = 0;
 var safehouse1;
 var safehouse2;
@@ -17,12 +17,13 @@ var whichSafeHouseToSeek = 0;
 var countDownNumber = 10;
 var timertext = 0;
 var safeText = 0;
+var playerNameText = 0;
+var playerNameTextHeight = randomInt(20, 60);
+var playerNameTextColor = randomInt(0, 999999);
 
 function randomInt (low, high) {
     return Math.floor(Math.random() * (high - low) + low);
 }
-
-var playerName = 'player';// + String(randomNameTag);
 
 Game.init = function(){
     game.stage.disableVisibilityChange = true;
@@ -32,14 +33,13 @@ Game.preload = function() {
 	game.load.image('sky', 'assets/sky.png');
     game.load.image('ground', 'assets/platform.png');
     game.load.image('star', 'assets/star.png');
-    game.load.spritesheet('player', 'assets/dude.png', 32, 48);
+    game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
     game.load.image('sprite','assets/sprites/sprite.png');
     game.load.image('safehouse1', 'assets/safehouse1.png');
     game.load.image('safehouse2', 'assets/safehouse2.png');
 };
 
 Game.create = function(){
-
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.add.sprite(0, 0, 'sky');
     safehouse1 = game.add.sprite(50, 400, 'safehouse1');
@@ -52,7 +52,7 @@ Game.create = function(){
     ledge.body.immovable = true;
     ledge = platforms.create(-150, 250, 'ground');
     ledge.body.immovable = true;
-    player = game.add.sprite(playerStartX, game.world.height - playerStartY, 'player');
+    player = game.add.sprite(playerStartX, game.world.height - playerStartY, 'dude');
     game.physics.arcade.enable(player);
     player.body.bounce.y = 0.1;
     player.body.gravity.y = 500;
@@ -61,17 +61,21 @@ Game.create = function(){
     player.animations.add('right', [5, 6, 7, 8], 10, true);
 
 	Game.playerMap = {};	
-    Client.askNewPlayer(playerStartX, game.world.height - playerStartY);
+    Client.askNewPlayer(playerStartX, game.world.height - playerStartY, playerName, playerNameTextHeight, playerNameTextColor);
 
     cursors = game.input.keyboard.createCursorKeys();
 
-    //create game timer
+    //create game timer and start it
     timertext = game.add.text(game.world.centerX, 50, 'Timer till safehouses closes:  ', { font: "32px Arial", fill: "#ffffff", align: "center" });
     timertext.anchor.setTo(0.5, 0.5);
+    game.time.events.loop(Phaser.Timer.SECOND, updateCounter, this); 
+    //create safehouse text directions (SAFE/NOT SAFE)
     safeText = game.add.text(game.world.centerX, 100, '', { font: "32px Arial", fill: "#000000", align: "center" });
     safeText.anchor.setTo(0.5, 0.5);    
-    game.time.events.loop(Phaser.Timer.SECOND, updateCounter, this);    
-    showSafe();
+    playerNameText = game.add.text(player.body.x + 16, player.body.y + 24 - playerNameTextHeight, playerName, { font: "12px Arial", fill: "#" + playerNameTextColor, align: "center" });
+    playerNameText.anchor.setTo(0.5, 0.5);  
+       
+    //showSafe();    
 };
 
 function showNotSafe() {
@@ -160,23 +164,37 @@ Game.update = function() {
     {
         player.body.velocity.y = -350;
     }
-	Client.sendPos(player.body.x,player.body.y);
+    Client.sendPos(player.body.x,player.body.y);
+    
+    //center text on sprite
+    playerNameText.x = player.body.x + (player.width / 2);
+    playerNameText.y = player.body.y + (player.height / 2) - playerNameTextHeight;
 }
 
 Game.addnewID = function(id){
 		recordedID = id;
 }
 
-Game.addNewPlayer = function(id,x,y){
-    Game.playerMap[id] = game.add.sprite(x, game.world.height - y, 'player');
-    Game.playerMap[id].alpha = 0.3;
+Game.addNewPlayer = function(id,x,y, playerNameIn, playerNameTextHeightIn, playerNameTextColorIn){
+
+    Game.playerMap[id] = game.add.sprite(x, game.world.height - y, 'dude');
+    Game.playerMap[id].alpha = 0.5;
+    Game.playerMap[id].text = game.add.text(x + 16, game.world.height - y + 24 - playerNameTextHeightIn, playerNameIn, { font: "12px Arial", fill: "#" + playerNameTextColorIn, align: "center" });
+    Game.playerMap[id].text.anchor.setTo(0.5, 0.5);  
 };
 
 Game.movePlayer = function(id,x,y){
 	
 	if (id == recordedID) {
-		return; }
-	
+        return; }
+
+    var playertext = Game.playerMap[id].text;
+    var distance = Phaser.Math.distance(playertext.x,playertext.y,x,y);
+    var tween = game.add.tween(playertext);
+    var duration = distance*1;
+    tween.to({x:x+16,y:y}, duration);
+    tween.start();
+
     var player = Game.playerMap[id];
     var distance = Phaser.Math.distance(player.x,player.y,x,y);
     var tween = game.add.tween(player);

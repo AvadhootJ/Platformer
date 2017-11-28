@@ -38,7 +38,7 @@ io.on('connection',function(socket){
             //console.log('a new player joined');            
         }
 
-        socket.player = {id: server.lastPlayderID++,x: -50,y: -50};
+        socket.player = {id: server.lastPlayderID++,x: -50,y: -50, playerNameIn:data.playerNameOut, playerNameTextHeightIn:data.playerNameTextHeightOut, playerNameTextColorIn:data.playerNameTextColorOut};
 
         socket.emit('getTimerFromServer', countdownTimer); //send newly connected player current time
         socket.emit('getWhichSafeHouseFromServer', whichSafeHouseIsSafe);
