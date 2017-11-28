@@ -205,5 +205,6 @@ Game.movePlayer = function(id,x,y){
 
 Game.removePlayer = function(id){
     Game.playerMap[id].destroy();
+    Game.playerMap[id].text.destroy();
     delete Game.playerMap[id];
 };
