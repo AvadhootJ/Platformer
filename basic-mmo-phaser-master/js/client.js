@@ -10,8 +10,8 @@ Client.socket = io.connect();
 //    Client.socket.emit('test');
 //};
 
-Client.askNewPlayer = function(x, y){
-    Client.socket.emit('newplayer', {x:x, y:y});
+Client.askNewPlayer = function(x, y, playerNameOut, playerNameTextHeightOut, playerNameTextColorOut){
+    Client.socket.emit('newplayer', {x:x, y:y, playerNameOut:playerNameOut, playerNameTextHeightOut:playerNameTextHeightOut, playerNameTextColorOut:playerNameTextColorOut});
 };
 
 Client.sendPos = function(x,y){
@@ -31,13 +31,13 @@ Client.socket.on('setID',function(data){
 });
 
 Client.socket.on('newplayer',function(data){
-    Game.addNewPlayer(data.id,data.x,data.y);
+    Game.addNewPlayer(data.id,data.x,data.y, data.playerNameIn, data.playerNameTextHeightIn, data.playerNameTextColorIn);
 });
 
 Client.socket.on('allplayers',function(data){
 
     for(var i = 0; i < data.length; i++){
-        Game.addNewPlayer(data[i].id,data[i].x,data[i].y);
+        Game.addNewPlayer(data[i].id,data[i].x,data[i].y, data[i].playerNameIn, data[i].playerNameTextHeightIn, data[i].playerNameTextColorIn);
     }
 
     Client.socket.on('move',function(data){
