@@ -14,8 +14,8 @@ Client.askNewPlayer = function(x, y, playerNameOut, playerNameTextHeightOut, pla
     Client.socket.emit('newplayer', {x:x, y:y, playerNameOut:playerNameOut, playerNameTextHeightOut:playerNameTextHeightOut, playerNameTextColorOut:playerNameTextColorOut});
 };
 
-Client.sendPos = function(x,y){
-  Client.socket.emit('sendPos',{x:x,y:y});
+Client.sendPos = function(x,y, id, facingDir){
+  Client.socket.emit('sendPos',{x:x,y:y, id:id, facingDir:facingDir});
 };
 
 Client.socket.on('getTimerFromServer', function(time){
@@ -41,7 +41,7 @@ Client.socket.on('allplayers',function(data){
     }
 
     Client.socket.on('move',function(data){
-        Game.movePlayer(data.id,data.x,data.y);
+        Game.movePlayer(data.id,data.x,data.y, data.facingDir);
     });
 
     Client.socket.on('remove',function(id){

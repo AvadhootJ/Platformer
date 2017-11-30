@@ -20,6 +20,7 @@ var safeText = 0;
 var playerNameText = 0;
 var playerNameTextHeight = randomInt(20, 60);
 var playerNameTextColor = randomInt(0, 999999);
+var playerFacingDir = 0;
 
 function randomInt (low, high) {
     return Math.floor(Math.random() * (high - low) + low);
@@ -74,9 +75,13 @@ Game.create = function(){
     safeText.anchor.setTo(0.5, 0.5);    
     playerNameText = game.add.text(player.body.x + 16, player.body.y + 24 - playerNameTextHeight, playerName, { font: "12px Arial", fill: "#" + playerNameTextColor, align: "center" });
     playerNameText.anchor.setTo(0.5, 0.5);  
-       
     //showSafe();    
+    setInterval(sendPosition, 10);
 };
+
+Game.render = function() {
+    //game.debug.text('this player id: ' + recordedID, 100, 380 )
+}
 
 function showNotSafe() {
     safeText.setText('You are NOT SAFE!\n Seek shelter in other safehouse!'); 
@@ -146,16 +151,19 @@ Game.update = function() {
     player.body.velocity.x = 0;
     if (cursors.left.isDown)
     {
+        playerFacingDir = -1;
         player.body.velocity.x = -150;
         player.animations.play('left');
     }
     else if (cursors.right.isDown)
     {
+        playerFacingDir = 1;
         player.body.velocity.x = 150;
         player.animations.play('right');
     }
     else
     {
+        playerFacingDir = 0;
         player.animations.stop();
         player.frame = 4;
     }
@@ -164,11 +172,15 @@ Game.update = function() {
     {
         player.body.velocity.y = -350;
     }
-    Client.sendPos(player.body.x,player.body.y);
+    //Client.sendPos(player.body.x,player.body.y, recordedID, playerFacingDir);
     
     //center text on sprite
     playerNameText.x = player.body.x + (player.width / 2);
     playerNameText.y = player.body.y + (player.height / 2) - playerNameTextHeight;
+}
+
+function sendPosition() {
+    Client.sendPos(player.body.x,player.body.y, recordedID, playerFacingDir);
 }
 
 Game.addnewID = function(id){
@@ -178,27 +190,42 @@ Game.addnewID = function(id){
 Game.addNewPlayer = function(id,x,y, playerNameIn, playerNameTextHeightIn, playerNameTextColorIn){
 
     Game.playerMap[id] = game.add.sprite(x, game.world.height - y, 'dude');
+    Game.playerMap[id].animations.add('left', [0, 1, 2, 3], 10, true);
+    Game.playerMap[id].animations.add('right', [5, 6, 7, 8], 10, true);
+    Game.playerMap[id].textHeight = playerNameTextHeightIn;
     Game.playerMap[id].alpha = 0.5;
     Game.playerMap[id].text = game.add.text(x + 16, game.world.height - y + 24 - playerNameTextHeightIn, playerNameIn, { font: "12px Arial", fill: "#" + playerNameTextColorIn, align: "center" });
     Game.playerMap[id].text.anchor.setTo(0.5, 0.5);  
 };
 
-Game.movePlayer = function(id,x,y){
+Game.movePlayer = function(id,x,y, face){
 	
 	if (id == recordedID) {
         return; }
 
+    if (face == -1) {
+        Game.playerMap[id].animations.play('left');
+    } else if (face == 1) {
+        Game.playerMap[id].animations.play('right');
+    } else {
+        Game.playerMap[id].animations.stop();
+        Game.playerMap[id].frame = 4;
+    }
+
+    Game.playerMap[id].x = x;
+    Game.playerMap[id].y = y;
+
     var playertext = Game.playerMap[id].text;
     var distance = Phaser.Math.distance(playertext.x,playertext.y,x,y);
     var tween = game.add.tween(playertext);
-    var duration = distance*1;
-    tween.to({x:x+16,y:y}, duration);
+    var duration = distance/10;
+    tween.to({x:x+16,y:y+24-Game.playerMap[id].textHeight}, duration);
     tween.start();
 
     var player = Game.playerMap[id];
     var distance = Phaser.Math.distance(player.x,player.y,x,y);
     var tween = game.add.tween(player);
-    var duration = distance*1;
+    var duration = distance/10;
     tween.to({x:x,y:y}, duration);
     tween.start();
 };

@@ -43,13 +43,22 @@ io.on('connection',function(socket){
         socket.emit('getTimerFromServer', countdownTimer); //send newly connected player current time
         socket.emit('getWhichSafeHouseFromServer', whichSafeHouseIsSafe);
         socket.emit('allplayers',getAllPlayers()); //send newly connected player the list of already connected players
+        console.log('new player with id: ' + socket.player.id);
         socket.emit('setID', socket.player);
         socket.broadcast.emit('newplayer',socket.player); //send message to all connected sockets except socket that triggered new connection
-        
+        /*
+        socket.on('sendFacingDir', function(data){
+            //console.log(socket.player.id + ':' + data.dir);
+            socket.broadcast.emit('receiveFacingDir',data);
+        });*/
+
         socket.on('sendPos',function(data){
-			//console.log('accepted player' + socket.player.id);
+            //console.log('accepted player' + socket.player.id);
+            //console.log(', id: ' + data.id + ' face: ' + data.facingDir);
             socket.player.x = data.x;
             socket.player.y = data.y;
+            socket.player.id = data.id;
+            socket.player.facingDir = data.facingDir;
             io.emit('move',socket.player);
         });
 
