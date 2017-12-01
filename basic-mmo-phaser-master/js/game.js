@@ -1,7 +1,4 @@
-/*
- * Author: Jerome Renaux
- * E-mail: jerome.renaux@gmail.com
- */
+
 
 var Game = {};
 var platforms;
@@ -63,19 +60,6 @@ Game.create = function(){
     var ground = platforms.create(0, game.world.height - 32, 'ground');
     ground.scale.setTo(4, 0.85);    
     ground.body.immovable = true;
-
-
-  //  var ledge = platforms.create(400, 400, 'ground');
-   //    ledge.body.immovable = true;
-
-    //ledge = platforms.create(800, 400, 'ground');
-    //ledge.body.immovable = true;
-
-    //ledge = platforms.create(-150, 250, 'ground');
-    //ledge.body.immovable = true;
-
-   //ledge = platforms.create(-150, 250, 'ground');
-    //ledge.body.immovable = true;
 
 
 
