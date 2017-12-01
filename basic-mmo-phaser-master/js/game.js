@@ -32,30 +32,72 @@ Game.init = function(){
 Game.preload = function() {
 	game.load.image('sky', 'assets/sky.png');
     game.load.image('ground', 'assets/platform.png');
+    game.load.image('ground', 'assets/platform.png');
+    game.load.image('wall', 'assets/rotatedplatform.png');    
     game.load.image('star', 'assets/star.png');
     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
     game.load.image('sprite','assets/sprites/sprite.png');
     game.load.image('safehouse1', 'assets/safehouse1.png');
+    game.load.image('cnterpc', 'assets/freetileset/sidepiece.png');
     game.load.image('safehouse2', 'assets/safehouse2.png');
 };
 
 Game.create = function(){
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.add.sprite(0, 0, 'sky');
-    safehouse1 = game.add.sprite(50, 400, 'safehouse1');
-    safehouse2 = game.add.sprite(300, 400, 'safehouse2');
+
+    safehouse1 = game.add.sprite(5, game.world.height - 165, 'safehouse1');
+    safehouse1.scale.setTo(0.85, 0.85);
+
+    safehouse2 = game.add.sprite(game.world.width - 120, 0, 'safehouse2');
+    safehouse2.scale.setTo(0.85, 0.85);
+    
+    //cnterpc = game.add.sprite(0, 0, 'cnterpc');
+    //cnterpc.scale.setTo(0.2, 0.2);
+
     platforms = game.add.group();
     platforms.enableBody = true;
-    var ground = platforms.create(0, game.world.height - 64, 'ground');
+
+    //Bottom Layer
+
+    var ground = platforms.create(0, game.world.height - 32, 'ground');
+    ground.scale.setTo(4, 0.85);    
     ground.body.immovable = true;
-    var ledge = platforms.create(400, 400, 'ground');
+
+
+  //  var ledge = platforms.create(400, 400, 'ground');
+   //    ledge.body.immovable = true;
+
+    //ledge = platforms.create(800, 400, 'ground');
+    //ledge.body.immovable = true;
+
+    //ledge = platforms.create(-150, 250, 'ground');
+    //ledge.body.immovable = true;
+
+
+    //Trump Wall
+    var wall = platforms.create(1000, 0, 'wall');
+    wall.scale.setTo(1, 0.5);
+    wall.body.immovable = true;
+
+    wall = platforms.create(1000, 300, 'wall');
+    wall.scale.setTo(1, 0.5);
+    wall.body.immovable = true;
+
+    //Extra Wall Because I suck
+    wall = platforms.create(1000, 400, 'wall');
+    wall.scale.setTo(1, 0.5);
+    wall.body.immovable = true;
+    
+//Legde below safehouse 2
+    ledge = platforms.create(game.world.width - 150, 139, 'ground');
+    ledge.scale.setTo(1.2, 0.85);
     ledge.body.immovable = true;
-    ledge = platforms.create(-150, 250, 'ground');
-    ledge.body.immovable = true;
+
     player = game.add.sprite(playerStartX, game.world.height - playerStartY, 'dude');
     game.physics.arcade.enable(player);
     player.body.bounce.y = 0.1;
-    player.body.gravity.y = 500;
+    player.body.gravity.y = 200;
     player.body.collideWorldBounds = true;
     player.animations.add('left', [0, 1, 2, 3], 10, true);
     player.animations.add('right', [5, 6, 7, 8], 10, true);
