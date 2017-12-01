@@ -74,8 +74,12 @@ Game.create = function(){
     //ledge = platforms.create(-150, 250, 'ground');
     //ledge.body.immovable = true;
 
+   //ledge = platforms.create(-150, 250, 'ground');
+    //ledge.body.immovable = true;
 
-    //Trump Wall
+
+
+    // Wall
     var wall = platforms.create(1000, 0, 'wall');
     wall.scale.setTo(1, 0.5);
     wall.body.immovable = true;
