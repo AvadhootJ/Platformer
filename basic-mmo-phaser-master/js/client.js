@@ -1,6 +1,4 @@
-/**
- * Created by Jerome on 03-03-17.
- */
+
 
 var Client = {};
 Client.socket = io.connect();
