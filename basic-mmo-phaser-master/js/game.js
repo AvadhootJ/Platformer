@@ -58,21 +58,24 @@ Game.create = function(){
     platforms = game.add.group();
     platforms.enableBody = true;
 
+    //Water
+    water = platforms.create(game.world.width/2  - 252, 565, 'water');
+    water.scale.setTo(4.1, 0.4);    
+    water.body.immovable = true;
+
+
     //Bottom Layer
 
-    var ground = platforms.create(0, game.world.height - 32, 'ground');
-    ground.scale.setTo(1, 0.85);    
+    var ground = platforms.create(0, game.world.height - 32, 'cntrpc');
+    ground.scale.setTo(3.1, 0.85);    
     ground.body.immovable = true;
 
-    ground = platforms.create(game.world.width - 375, game.world.height - 32, 'ground');
-    ground.scale.setTo(1.1, 0.85);    
+    ground = platforms.create(game.world.width - 375, game.world.height - 32, 'cntrpc');
+    ground.scale.setTo(3, 0.85);    
     ground.body.immovable = true;
 
 
-    //Water
-    water = platforms.create(game.world.width/2  - 240, 565, 'water');
-    water.scale.setTo(4.1, 0.30);    
-    water.body.immovable = true;
+
     //Center platform
     var aire = platforms.create(game.world.width - 970, game.world.height/2, 'cntrpc');
     aire.scale.setTo(5, 0.25);    
