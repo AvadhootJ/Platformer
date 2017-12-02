@@ -40,17 +40,19 @@ Game.preload = function() {
     game.load.image('water', 'assets/water.png');
     game.load.image('cutesun', 'assets/CuteSun.png');
     game.load.image('pinkmushroom', 'assets/pinkmushroom.png');
+    game.load.image('darktree', 'assets/darktree.png');
+    game.load.image('Stone','assets/Stone.png');
 };
 
 Game.create = function(){
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.add.sprite(0, 0, 'niceforestbg');
   //  game.scale.setTo(1.2, 1);
-   safehouse1 = game.add.sprite(5, game.world.height - 90, 'safehouse1');
-    safehouse1.scale.setTo(0.4, 0.4);
+   safehouse1 = game.add.sprite(50, game.world.height - 50, 'safehouse1');
+    safehouse1.scale.setTo(0.1, 0.1);
 
-    safehouse2 = game.add.sprite(game.world.width - 55,  game.world.height - 90, 'safehouse2');
-    safehouse2.scale.setTo(0.4, 0.4);
+    safehouse2 = game.add.sprite(game.world.width - 55,  game.world.height - 50, 'safehouse2');
+    safehouse2.scale.setTo(0.1, 0.1);
     
     //cnterpc = game.add.sprite(0, 0, 'cnterpc');
     //cnterpc.scale.setTo(0.2, 0.2);
@@ -70,11 +72,19 @@ Game.create = function(){
     ground.scale.setTo(3.1, 0.85);    
     ground.body.immovable = true;
 
+
+    //Bottom tree
+   var darktree = game.add.sprite(-1.5, game.world.height - 165, 'darktree');
+   darktree.scale.setTo(0.45, 0.45);
+
     ground = platforms.create(game.world.width - 375, game.world.height - 32, 'cntrpc');
     ground.scale.setTo(3, 0.85);    
     ground.body.immovable = true;
 
+    //Bottom Stone
 
+    var stone = game.add.sprite(game.world.width - 110,  game.world.height - 70, 'Stone');
+    stone.scale.setTo(0.8, 0.8);
 
     //Center platform
     var aire = platforms.create(game.world.width - 970, game.world.height/2, 'cntrpc');
