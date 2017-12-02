@@ -27,7 +27,7 @@ Game.init = function(){
 };
 
 Game.preload = function() {
-	game.load.image('sky', 'assets/sky.png');
+	game.load.image('niceforestbg', 'assets/niceforestbg.png');
     game.load.image('ground', 'assets/platform.png');
     game.load.image('ground', 'assets/platform.png');
     game.load.image('wall', 'assets/rotatedplatform.png');    
@@ -35,19 +35,22 @@ Game.preload = function() {
     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
     game.load.image('sprite','assets/sprites/sprite.png');
     game.load.image('safehouse1', 'assets/safehouse1.png');
-    game.load.image('cnterpc', 'assets/freetileset/sidepiece.png');
+    game.load.image('cntrpc', 'assets/freetileset/cntrpc.png');
     game.load.image('safehouse2', 'assets/safehouse2.png');
+    game.load.image('water', 'assets/water.png');
+    game.load.image('cutesun', 'assets/CuteSun.png');
+    game.load.image('pinkmushroom', 'assets/pinkmushroom.png');
 };
 
 Game.create = function(){
     game.physics.startSystem(Phaser.Physics.ARCADE);
-    game.add.sprite(0, 0, 'sky');
+    game.add.sprite(0, 0, 'niceforestbg');
+  //  game.scale.setTo(1.2, 1);
+   safehouse1 = game.add.sprite(5, game.world.height - 90, 'safehouse1');
+    safehouse1.scale.setTo(0.4, 0.4);
 
-    safehouse1 = game.add.sprite(5, game.world.height - 165, 'safehouse1');
-    safehouse1.scale.setTo(0.85, 0.85);
-
-    safehouse2 = game.add.sprite(game.world.width - 120, 0, 'safehouse2');
-    safehouse2.scale.setTo(0.85, 0.85);
+    safehouse2 = game.add.sprite(game.world.width - 55,  game.world.height - 90, 'safehouse2');
+    safehouse2.scale.setTo(0.4, 0.4);
     
     //cnterpc = game.add.sprite(0, 0, 'cnterpc');
     //cnterpc.scale.setTo(0.2, 0.2);
@@ -58,12 +61,25 @@ Game.create = function(){
     //Bottom Layer
 
     var ground = platforms.create(0, game.world.height - 32, 'ground');
-    ground.scale.setTo(4, 0.85);    
+    ground.scale.setTo(1, 0.85);    
+    ground.body.immovable = true;
+
+    ground = platforms.create(game.world.width - 375, game.world.height - 32, 'ground');
+    ground.scale.setTo(1.1, 0.85);    
     ground.body.immovable = true;
 
 
+    //Water
+    water = platforms.create(game.world.width/2  - 240, 565, 'water');
+    water.scale.setTo(4.1, 0.30);    
+    water.body.immovable = true;
+    //Center platform
+    var aire = platforms.create(game.world.width - 970, game.world.height/2, 'cntrpc');
+    aire.scale.setTo(5, 0.25);    
+    aire.body.immovable = true;
 
     // Wall
+    /*
     var wall = platforms.create(1000, 0, 'wall');
     wall.scale.setTo(1, 0.5);
     wall.body.immovable = true;
@@ -76,16 +92,40 @@ Game.create = function(){
     wall = platforms.create(1000, 400, 'wall');
     wall.scale.setTo(1, 0.5);
     wall.body.immovable = true;
-    
-//Legde below safehouse 2
-    ledge = platforms.create(game.world.width - 150, 139, 'ground');
-    ledge.scale.setTo(1.2, 0.85);
+    */
+
+    //Cute Sun
+    var cutesun = game.add.sprite(game.world.width - 110, 0, 'cutesun');
+    cutesun.scale.setTo(0.3, 0.3);
+  //  cutesun.body.immovable = true;
+
+//Ledge for falling players
+    ledge = platforms.create(100, 170, 'cntrpc');
+    ledge.scale.setTo(1.2, 0.25);
     ledge.body.immovable = true;
+
+//Mirrored ledge
+
+ledge = platforms.create(game.world.width - 260, 170, 'cntrpc');
+ledge.scale.setTo(1.2, 0.25);
+ledge.body.immovable = true;
+
+
+//Decorations:
+
+//Mushrooms
+var pinkmushroom = game.add.sprite(game.world.width - 900, game.world.height/2 - 15, 'pinkmushroom');
+pinkmushroom.scale.setTo(0.4, 0.4);
+
+pinkmushroom = game.add.sprite(game.world.width - 875, game.world.height/2 - 15, 'pinkmushroom');
+pinkmushroom.scale.setTo(0.4, 0.4);
+
+
 
     player = game.add.sprite(playerStartX, game.world.height - playerStartY, 'dude');
     game.physics.arcade.enable(player);
     player.body.bounce.y = 0.1;
-    player.body.gravity.y = 200;
+    player.body.gravity.y = 390;
     player.body.collideWorldBounds = true;
     player.animations.add('left', [0, 1, 2, 3], 10, true);
     player.animations.add('right', [5, 6, 7, 8], 10, true);
