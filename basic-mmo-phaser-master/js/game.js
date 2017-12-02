@@ -102,16 +102,30 @@ Game.create = function(){
     cutesun.scale.setTo(0.3, 0.3);
   //  cutesun.body.immovable = true;
 
-//Ledge for falling players
+// Upper Ledge for falling players
     ledge = platforms.create(100, 170, 'cntrpc');
     ledge.scale.setTo(1.2, 0.25);
     ledge.body.immovable = true;
 
-//Mirrored ledge
+// Upper Mirrored ledge
 
 ledge = platforms.create(game.world.width - 260, 170, 'cntrpc');
 ledge.scale.setTo(1.2, 0.25);
 ledge.body.immovable = true;
+
+
+
+// Lower Ledge
+ledge = platforms.create(100, 420, 'cntrpc');
+ledge.scale.setTo(1.2, 0.25);
+ledge.body.immovable = true;
+
+// Lower Mirrored ledge
+
+ledge = platforms.create(game.world.width - 260, 420, 'cntrpc');
+ledge.scale.setTo(1.2, 0.25);
+ledge.body.immovable = true;
+
 
 
 //Decorations:
