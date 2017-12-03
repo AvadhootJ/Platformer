@@ -28,6 +28,7 @@ Game.init = function(){
 
 Game.preload = function() {
     game.load.image('greencloud', 'assets/GreenCloud.png');
+    game.load.image('cloud2', 'assets/cloud2.png');
 	game.load.image('niceforestbg', 'assets/niceforestbg.png');
     game.load.image('ground', 'assets/platform.png');
     game.load.image('ground', 'assets/platform.png');
@@ -41,6 +42,7 @@ Game.preload = function() {
     game.load.image('water', 'assets/water.png');
     game.load.image('cutesun', 'assets/CuteSun.png');
     game.load.image('pinkmushroom', 'assets/pinkmushroom.png');
+    game.load.image('orangemushroom', 'assets/orangemushroom.png');
     game.load.image('darktree', 'assets/darktree.png');
     game.load.image('Stone','assets/Stone.png');
 };
@@ -95,17 +97,19 @@ Game.create = function(){
     aire.body.immovable = true;
 
 
+//Cloud
+
+var cloud = game.add.sprite(0, 30, 'cloud2');
+cloud.scale.setTo(0.1, 0.1);
+game.physics.enable(cloud, Phaser.Physics.ARCADE);
+cloud.body.velocity.x=100;
+
 
     //Cute Sun
     var cutesun = game.add.sprite(game.world.width - 110, 0, 'cutesun');
     cutesun.scale.setTo(0.3, 0.3);
   //  cutesun.body.immovable = true;
 
-//Cloud
-var greencloud = game.add.sprite(100, 170, 'greencloud');
-game.physics.enable(greencloud, Phaser.Physics.ARCADE);
-
-greencloud.body.velocity.x=150;
 
 // Upper Ledge for falling players
     ledge = platforms.create(100, 170, 'cntrpc');
@@ -143,6 +147,9 @@ pinkmushroom = game.add.sprite(game.world.width - 875, game.world.height/2 - 15,
 pinkmushroom.scale.setTo(0.4, 0.4);
 
 
+var orangemushroom = game.add.sprite(100, 393, 'orangemushroom');
+orangemushroom.scale.setTo(0.7, 0.7);
+
 
     player = game.add.sprite(playerStartX, game.world.height - playerStartY, 'dude');
     game.physics.arcade.enable(player);
@@ -152,8 +159,6 @@ pinkmushroom.scale.setTo(0.4, 0.4);
     player.animations.add('left', [0, 1, 2, 3], 10, true);
     player.animations.add('right', [5, 6, 7, 8], 10, true);
 
-   // greencloud.animations.add('run');
-   // greencloud.animations.play('run', 15, true);
 
 	Game.playerMap = {};	
     Client.askNewPlayer(playerStartX, game.world.height - playerStartY, playerName, playerNameTextHeight, playerNameTextColor);
@@ -230,14 +235,6 @@ function updateWhichSafeHouse(whichSafeHouse) {
 
 Game.update = function() {
 
-/*
-    greencloud.x -= 2;
-    
-        if (greencloud.x < -greencloud.width)
-        {
-            greencloud.x = game.world.width;
-        }
-*/
 
     if (whichSafeHouseToSeek) {
         collisionsafehouse1();
