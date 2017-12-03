@@ -28,6 +28,7 @@ server.listen(process.env.PORT || 8080,function(){
 io.on('connection',function(socket){    
         
     socket.on('newplayer',function(data){
+        /*
         totalNumberOfPlayers++;
         //if very first player, start countdown for very first time
         if (totalNumberOfPlayers > 0 && firstPlayerJoined == 0) {
@@ -36,21 +37,24 @@ io.on('connection',function(socket){
             firstPlayerJoined = 1;
         } else {
             //console.log('a new player joined');            
-        }
+        }*/
 
         socket.player = {id: server.lastPlayderID++,x: -50,y: -50, playerNameIn:data.playerNameOut, playerNameTextHeightIn:data.playerNameTextHeightOut, playerNameTextColorIn:data.playerNameTextColorOut};
 
-        socket.emit('getTimerFromServer', countdownTimer); //send newly connected player current time
-        socket.emit('getWhichSafeHouseFromServer', whichSafeHouseIsSafe);
         socket.emit('allplayers',getAllPlayers()); //send newly connected player the list of already connected players
         console.log('new player with id: ' + socket.player.id);
-        socket.emit('setID', socket.player);
+        socket.emit('setID', socket.player); //send just to client
         socket.broadcast.emit('newplayer',socket.player); //send message to all connected sockets except socket that triggered new connection
         /*
         socket.on('sendFacingDir', function(data){
             //console.log(socket.player.id + ':' + data.dir);
             socket.broadcast.emit('receiveFacingDir',data);
         });*/
+
+        socket.on('hitPlayer', function(data) {
+            //console.log('player ' + data.id + ' got hit!');
+            socket.broadcast.emit('playerGotHit',data.id, data.hitFrom); //send message to all connected sockets except socket that triggered new connection            
+        });
 
         socket.on('sendPos',function(data){
             //console.log('accepted player' + socket.player.id);
@@ -64,13 +68,14 @@ io.on('connection',function(socket){
 
         socket.on('disconnect',function(){
             io.emit('remove',socket.player.id);
+            /*
             totalNumberOfPlayers--;
             //console.log('player left game');
             if (totalNumberOfPlayers == 0 && firstPlayerJoined == 1) {
                 //console.log('last player has left the game');
                 countdownTimer = timerlength;
                 firstPlayerJoined = 0;
-            }
+            }*/
         });
     });
 
