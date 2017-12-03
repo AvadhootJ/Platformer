@@ -27,6 +27,7 @@ Game.init = function(){
 };
 
 Game.preload = function() {
+    game.load.image('greencloud', 'assets/GreenCloud.png');
 	game.load.image('niceforestbg', 'assets/niceforestbg.png');
     game.load.image('ground', 'assets/platform.png');
     game.load.image('ground', 'assets/platform.png');
@@ -45,6 +46,8 @@ Game.preload = function() {
 };
 
 Game.create = function(){
+    game.world.setBounds(0, 0, 1300, 600);
+
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.add.sprite(0, 0, 'niceforestbg');
   //  game.scale.setTo(1.2, 1);
@@ -91,26 +94,16 @@ Game.create = function(){
     aire.scale.setTo(5, 0.25);    
     aire.body.immovable = true;
 
-    // Wall
-    /*
-    var wall = platforms.create(1000, 0, 'wall');
-    wall.scale.setTo(1, 0.5);
-    wall.body.immovable = true;
 
-    wall = platforms.create(1000, 300, 'wall');
-    wall.scale.setTo(1, 0.5);
-    wall.body.immovable = true;
-
-    //Extra Wall Because I suck
-    wall = platforms.create(1000, 400, 'wall');
-    wall.scale.setTo(1, 0.5);
-    wall.body.immovable = true;
-    */
 
     //Cute Sun
     var cutesun = game.add.sprite(game.world.width - 110, 0, 'cutesun');
     cutesun.scale.setTo(0.3, 0.3);
   //  cutesun.body.immovable = true;
+
+//Cloud
+var cloud = game.add.sprite(100, 170, 'greencloud');
+
 
 // Upper Ledge for falling players
     ledge = platforms.create(100, 170, 'cntrpc');
@@ -157,9 +150,12 @@ pinkmushroom.scale.setTo(0.4, 0.4);
     player.animations.add('left', [0, 1, 2, 3], 10, true);
     player.animations.add('right', [5, 6, 7, 8], 10, true);
 
+   // greencloud.animations.add('run');
+   // greencloud.animations.play('run', 15, true);
+
 	Game.playerMap = {};	
     Client.askNewPlayer(playerStartX, game.world.height - playerStartY, playerName, playerNameTextHeight, playerNameTextColor);
-
+    game.camera.follow(player);
     cursors = game.input.keyboard.createCursorKeys();
 
     //create game timer and start it
@@ -231,6 +227,15 @@ function updateWhichSafeHouse(whichSafeHouse) {
 }
 
 Game.update = function() {
+
+/*
+    greencloud.x -= 2;
+    
+        if (greencloud.x < -greencloud.width)
+        {
+            greencloud.x = game.world.width;
+        }
+*/
 
     if (whichSafeHouseToSeek) {
         collisionsafehouse1();
