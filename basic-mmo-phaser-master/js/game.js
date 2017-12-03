@@ -102,8 +102,10 @@ Game.create = function(){
   //  cutesun.body.immovable = true;
 
 //Cloud
-var cloud = game.add.sprite(100, 170, 'greencloud');
+var greencloud = game.add.sprite(100, 170, 'greencloud');
+game.physics.enable(greencloud, Phaser.Physics.ARCADE);
 
+greencloud.body.velocity.x=150;
 
 // Upper Ledge for falling players
     ledge = platforms.create(100, 170, 'cntrpc');
