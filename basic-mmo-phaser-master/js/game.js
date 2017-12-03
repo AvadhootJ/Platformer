@@ -28,6 +28,7 @@ Game.init = function(){
 
 Game.preload = function() {
     game.load.image('greencloud', 'assets/GreenCloud.png');
+    game.load.audio('backgroundmusic', 'assets/FantasyGameBackground.mp3');
     game.load.image('cloud2', 'assets/cloud2.png');
 	game.load.image('niceforestbg', 'assets/niceforestbg.png');
     game.load.image('ground', 'assets/platform.png');
@@ -49,6 +50,10 @@ Game.preload = function() {
 
 Game.create = function(){
     game.world.setBounds(0, 0, 1300, 600);
+
+   // var backgroundmusic = new Phaser.Sound(game,'backgroundmusic',10,true);
+   var xx  = game.add.audio('backgroundmusic');
+    xx.play();
 
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.add.sprite(0, 0, 'niceforestbg');
