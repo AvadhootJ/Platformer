@@ -51,9 +51,10 @@ Game.preload = function() {
 Game.create = function(){
     game.world.setBounds(0, 0, 1300, 600);
 
-   // var backgroundmusic = new Phaser.Sound(game,'backgroundmusic',10,true);
-   var xx  = game.add.audio('backgroundmusic');
-    xx.play();
+    //Background music
+   var backgroundmusic  = game.add.audio('backgroundmusic');
+   backgroundmusic.loop = true;
+   backgroundmusic.play();
 
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.add.sprite(0, 0, 'niceforestbg');
