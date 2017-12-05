@@ -71,26 +71,26 @@ Game.create = function(){
     platforms.enableBody = true;
 
     //Water
-    water = platforms.create(game.world.width/2  - 252, 565, 'water');
+  /*  water = platforms.create(game.world.width/2  - 252, 565, 'water');
     water.scale.setTo(4.1, 0.4);    
     water.body.immovable = true;
-
+*/
 
     //Bottom Layer
 
-    var ground = platforms.create(0, game.world.height - 32, 'cntrpc');
-    ground.scale.setTo(3.1, 0.85);    
+    var ground = platforms.create(game.world.width/2 - 650, game.world.height - 32, 'cntrpc');
+    ground.scale.setTo(11, 0.85);    
     ground.body.immovable = true;
 
 
     //Bottom tree
    var darktree = game.add.sprite(-1.5, game.world.height - 165, 'darktree');
    darktree.scale.setTo(0.45, 0.45);
-
+/*
     ground = platforms.create(game.world.width - 375, game.world.height - 32, 'cntrpc');
     ground.scale.setTo(3, 0.85);    
     ground.body.immovable = true;
-
+*/
     //Bottom Stone
 
     var stone = game.add.sprite(game.world.width - 110,  game.world.height - 70, 'Stone');
@@ -108,6 +108,11 @@ var cloud = game.add.sprite(0, 30, 'cloud2');
 cloud.scale.setTo(0.1, 0.1);
 game.physics.enable(cloud, Phaser.Physics.ARCADE);
 cloud.body.velocity.x=100;
+
+cloud = game.add.sprite(-40, 40, 'cloud2');
+cloud.scale.setTo(0.1, 0.1);
+game.physics.enable(cloud, Phaser.Physics.ARCADE);
+cloud.body.velocity.x=90;
 
 
     //Cute Sun
