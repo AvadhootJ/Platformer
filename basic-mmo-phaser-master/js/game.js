@@ -31,6 +31,7 @@ Game.preload = function() {
     game.load.image('bush2', 'assets/bush2.png');
     game.load.image('bush3', 'assets/bush3.png');
     game.load.image('bush4', 'assets/bush4.png');
+    game.load.image('crate', 'assets/Crate.png');
     game.load.audio('backgroundmusic', 'assets/FantasyGameBackground.mp3');
     game.load.image('cloud2', 'assets/cloud2.png');
     game.load.image('cloud1', 'assets/cloud2.png');
@@ -82,11 +83,6 @@ Game.create = function(){
     platforms = game.add.group();
     platforms.enableBody = true;
 
-    //Water
-  /*  water = platforms.create(game.world.width/2  - 252, 565, 'water');
-    water.scale.setTo(4.1, 0.4);    
-    water.body.immovable = true;
-*/
 
     //Bottom tree
     var darktree = game.add.sprite(-0.5, game.world.height - 180, 'darktree');
@@ -99,12 +95,6 @@ Game.create = function(){
     ground.body.immovable = true;
 
 
-
-/*
-    ground = platforms.create(game.world.width - 375, game.world.height - 32, 'cntrpc');
-    ground.scale.setTo(3, 0.85);    
-    ground.body.immovable = true;
-*/
     //Bottom Stone
 
     var stone = game.add.sprite(game.world.width - 110,  game.world.height - 70, 'Stone');
@@ -145,6 +135,16 @@ cloud = game.add.sprite(-4000, 40, 'cloud2');
 cloud.scale.setTo(0.1, 0.1);
 game.physics.enable(cloud, Phaser.Physics.ARCADE);
 cloud.body.velocity.x=45;
+
+cloud = game.add.sprite(-4000, 40, 'cloud2');
+cloud.scale.setTo(0.2, 0.2);
+game.physics.enable(cloud, Phaser.Physics.ARCADE);
+cloud.body.velocity.x=40;
+
+cloud = game.add.sprite(-3000, 38, 'cloud2');
+cloud.scale.setTo(0.2, 0.2);
+game.physics.enable(cloud, Phaser.Physics.ARCADE);
+cloud.body.velocity.x=40;
 
 cloud = game.add.sprite(-1000, 20, 'cloud2');
 cloud.scale.setTo(0.1, 0.1);
@@ -219,10 +219,7 @@ floatrightpiece.body.immovable = true;
 
 
 // Lower Ledge
-/*ledge = platforms.create(100, 420, 'cntrpc');
-ledge.scale.setTo(1.2, 0.25);
-ledge.body.immovable = true;
-*/
+
 
 floatleftpiece = platforms.create(100, 420, 'floatleftpiece');
 floatleftpiece.scale.setTo(0.4, 0.35);
@@ -237,11 +234,7 @@ floatrightpiece.scale.setTo(0.4, 0.35);
 floatrightpiece.body.immovable = true;
 
 // Lower Mirrored ledge
-/*
-ledge = platforms.create(game.world.width - 260, 420, 'cntrpc');
-ledge.scale.setTo(1.2, 0.25);
-ledge.body.immovable = true;
-*/
+
 
 floatleftpiece = platforms.create(game.world.width - 260, 420, 'floatleftpiece');
 floatleftpiece.scale.setTo(0.4, 0.35);
@@ -254,9 +247,15 @@ floatcenterpiece.body.immovable = true;
  floatrightpiece = platforms.create(game.world.width - 160, 420, 'floatrightpiece');
 floatrightpiece.scale.setTo(0.4, 0.35);
 floatrightpiece.body.immovable = true;
+
 //Decorations:
 
 //Mushrooms
+
+
+var orangemushroom = game.add.sprite(game.world.width - 900, game.world.height/2 - 29   , 'orangemushroom');
+orangemushroom.scale.setTo(0.7, 0.7);
+
 var pinkmushroom = game.add.sprite(game.world.width - 900, game.world.height/2 - 15, 'pinkmushroom');
 pinkmushroom.scale.setTo(0.4, 0.4);
 
@@ -264,10 +263,24 @@ pinkmushroom = game.add.sprite(game.world.width - 875, game.world.height/2 - 15,
 pinkmushroom.scale.setTo(0.4, 0.4);
 
 
-var orangemushroom = game.add.sprite(100, 393, 'orangemushroom');
-orangemushroom.scale.setTo(0.7, 0.7);
 
+//Top Right Mushrooms
 
+var pinkmushroom1 = game.add.sprite(1100, 141, 'pinkmushroom');
+pinkmushroom1.scale.setTo(0.7, 0.7);
+
+var orangemushroom1 = game.add.sprite(1100, 150, 'orangemushroom');
+orangemushroom1.scale.setTo(0.5, 0.5);
+
+pinkmushroom1 = game.add.sprite(1130, 155, 'pinkmushroom');
+pinkmushroom1.scale.setTo(0.4, 0.4);
+
+//Crate
+/*
+var crate =  platforms.create(925, 265, 'crate');
+crate.scale.setTo(0.5, 0.5);    
+crate.body.immovable = true;
+*/
 //Bushes
 
 var bush = game.add.sprite(255, game.world.height - 70, 'bush1');
@@ -278,6 +291,14 @@ bush.scale.setTo(0.6, 0.6);
 
 bush = game.add.sprite(270, game.world.height - 57, 'bush4');
 bush.scale.setTo(0.6, 0.6);
+
+//Center Platform bush
+bush = game.add.sprite(760, game.world.height/2 - 30, 'bush2');
+bush.scale.setTo(0.5, 0.5);
+
+bush = game.add.sprite(780, game.world.height/2 - 30, 'bush1');
+bush.scale.setTo(0.5, 0.5);
+
 
     player = game.add.sprite(playerStartX, game.world.height - playerStartY, 'dude');
     game.physics.arcade.enable(player);
