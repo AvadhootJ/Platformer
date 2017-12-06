@@ -27,9 +27,13 @@ Game.init = function(){
 };
 
 Game.preload = function() {
-    game.load.image('greencloud', 'assets/GreenCloud.png');
+    game.load.image('bush1', 'assets/bush1.png');
+    game.load.image('bush2', 'assets/bush2.png');
+    game.load.image('bush3', 'assets/bush3.png');
+    game.load.image('bush4', 'assets/bush4.png');
     game.load.audio('backgroundmusic', 'assets/FantasyGameBackground.mp3');
     game.load.image('cloud2', 'assets/cloud2.png');
+    game.load.image('cloud1', 'assets/cloud2.png');
 	game.load.image('niceforestbg', 'assets/niceforestbg.png');
     game.load.image('ground', 'assets/platform.png');
     game.load.image('ground', 'assets/platform.png');
@@ -38,7 +42,6 @@ Game.preload = function() {
     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
     game.load.image('sprite','assets/sprites/sprite.png');
     game.load.image('safehouse1', 'assets/safehouse1.png');
-    game.load.image('cntrpc', 'assets/freetileset/cntrpc.png');
     game.load.image('safehouse2', 'assets/safehouse2.png');
     game.load.image('water', 'assets/water.png');
     game.load.image('cutesun', 'assets/CuteSun.png');
@@ -46,6 +49,16 @@ Game.preload = function() {
     game.load.image('orangemushroom', 'assets/orangemushroom.png');
     game.load.image('darktree', 'assets/darktree.png');
     game.load.image('Stone','assets/Stone.png');
+
+    game.load.image('floatleftpiece','assets/floatleftpiece.png');
+    game.load.image('floatcenterpiece', 'assets/floatcenterpiece.png');
+    game.load.image('floatrightpiece', 'assets/floatrightpiece.png');
+
+
+    game.load.image('leftpiece','assets/leftpiece.png');
+    game.load.image('cntrpc', 'assets/freetileset/cntrpc.png');
+        game.load.image('rightpiece', 'assets/rightpiece.png');
+
 };
 
 Game.create = function(){
@@ -64,9 +77,7 @@ Game.create = function(){
 
     safehouse2 = game.add.sprite(game.world.width - 55,  game.world.height - 50, 'safehouse2');
     safehouse2.scale.setTo(0.1, 0.1);
-    
-    //cnterpc = game.add.sprite(0, 0, 'cnterpc');
-    //cnterpc.scale.setTo(0.2, 0.2);
+
 
     platforms = game.add.group();
     platforms.enableBody = true;
@@ -77,6 +88,10 @@ Game.create = function(){
     water.body.immovable = true;
 */
 
+    //Bottom tree
+    var darktree = game.add.sprite(-0.5, game.world.height - 180, 'darktree');
+    darktree.scale.setTo(0.5, 0.5);
+
     //Bottom Layer
 
     var ground = platforms.create(game.world.width/2 - 650, game.world.height - 32, 'cntrpc');
@@ -84,9 +99,7 @@ Game.create = function(){
     ground.body.immovable = true;
 
 
-    //Bottom tree
-   var darktree = game.add.sprite(-1.5, game.world.height - 165, 'darktree');
-   darktree.scale.setTo(0.45, 0.45);
+
 /*
     ground = platforms.create(game.world.width - 375, game.world.height - 32, 'cntrpc');
     ground.scale.setTo(3, 0.85);    
@@ -98,56 +111,149 @@ Game.create = function(){
     stone.scale.setTo(0.8, 0.8);
 
     //Center platform
-    var aire = platforms.create(game.world.width - 970, game.world.height/2, 'cntrpc');
-    aire.scale.setTo(5, 0.25);    
-    aire.body.immovable = true;
 
+    var lft = platforms.create(game.world.width - 948, game.world.height/2, 'leftpiece');
+    lft.scale.setTo(1.05, 0.25);    
+    lft.body.immovable = true;
 
-//Cloud
+    var center = platforms.create(game.world.width - 815, game.world.height/2, 'cntrpc');
+    center.scale.setTo(2.7, 0.25);    
+    center.body.immovable = true;
 
-var cloud = game.add.sprite(0, 30, 'cloud2');
-cloud.scale.setTo(0.1, 0.1);
-game.physics.enable(cloud, Phaser.Physics.ARCADE);
-cloud.body.velocity.x=100;
-
-cloud = game.add.sprite(-40, 40, 'cloud2');
-cloud.scale.setTo(0.1, 0.1);
-game.physics.enable(cloud, Phaser.Physics.ARCADE);
-cloud.body.velocity.x=90;
+    var rtt = platforms.create(game.world.width - 470, game.world.height/2, 'rightpiece');
+    rtt.scale.setTo(1.05, 0.25);    
+    rtt.body.immovable = true;
 
 
     //Cute Sun
     var cutesun = game.add.sprite(game.world.width - 110, 0, 'cutesun');
     cutesun.scale.setTo(0.3, 0.3);
-  //  cutesun.body.immovable = true;
 
+    //Cloud
+
+var cloud = game.add.sprite(0, 30, 'cloud2');
+cloud.scale.setTo(0.1, 0.1);
+game.physics.enable(cloud, Phaser.Physics.ARCADE);
+cloud.body.velocity.x=50;
+
+cloud = game.add.sprite(-40, 40, 'cloud2');
+cloud.scale.setTo(0.1, 0.1);
+game.physics.enable(cloud, Phaser.Physics.ARCADE);
+cloud.body.velocity.x=45;
+
+cloud = game.add.sprite(-4000, 40, 'cloud2');
+cloud.scale.setTo(0.1, 0.1);
+game.physics.enable(cloud, Phaser.Physics.ARCADE);
+cloud.body.velocity.x=45;
+
+cloud = game.add.sprite(-1000, 20, 'cloud2');
+cloud.scale.setTo(0.1, 0.1);
+game.physics.enable(cloud, Phaser.Physics.ARCADE);
+cloud.body.velocity.x=55;
+
+cloud = game.add.sprite(-4000, 20, 'cloud2');
+cloud.scale.setTo(0.1, 0.1);
+game.physics.enable(cloud, Phaser.Physics.ARCADE);
+cloud.body.velocity.x=55;
+
+cloud = game.add.sprite(-600, 0, 'cloud2');
+cloud.scale.setTo(0.1, 0.1);
+game.physics.enable(cloud, Phaser.Physics.ARCADE);
+cloud.body.velocity.x=27;
+
+cloud = game.add.sprite(-1600, 0, 'cloud2');
+cloud.scale.setTo(0.1, 0.1);
+game.physics.enable(cloud, Phaser.Physics.ARCADE);
+cloud.body.velocity.x=27;
+
+cloud = game.add.sprite(-700, 15, 'cloud2');
+cloud.scale.setTo(0.1, 0.1);
+game.physics.enable(cloud, Phaser.Physics.ARCADE);
+cloud.body.velocity.x=35;
+
+cloud = game.add.sprite(0, -10, 'cloud1');
+cloud.scale.setTo(0.3, 0.3);
+game.physics.enable(cloud, Phaser.Physics.ARCADE);
+cloud.body.velocity.x=30;
+
+cloud = game.add.sprite(-500, -80, 'cloud1');
+cloud.scale.setTo(0.4, 0.4);
+game.physics.enable(cloud, Phaser.Physics.ARCADE);
+cloud.body.velocity.x=20;
+
+cloud = game.add.sprite(-1500, -75, 'cloud1');
+cloud.scale.setTo(0.4, 0.4);
+game.physics.enable(cloud, Phaser.Physics.ARCADE);
+cloud.body.velocity.x=20;
 
 // Upper Ledge for falling players
-    ledge = platforms.create(100, 170, 'cntrpc');
-    ledge.scale.setTo(1.2, 0.25);
-    ledge.body.immovable = true;
+
+var floatleftpiece = platforms.create(100, 170, 'floatleftpiece');
+    floatleftpiece.scale.setTo(0.4, 0.35);
+    floatleftpiece.body.immovable = true;
+
+var floatcenterpiece = platforms.create(150, 170, 'floatcenterpiece');
+floatcenterpiece.scale.setTo(0.4, 0.35);
+floatcenterpiece.body.immovable = true;
+
+var floatrightpiece = platforms.create(200, 170, 'floatrightpiece');
+floatrightpiece.scale.setTo(0.4, 0.35);
+floatrightpiece.body.immovable = true;
+
+
 
 // Upper Mirrored ledge
 
-ledge = platforms.create(game.world.width - 260, 170, 'cntrpc');
-ledge.scale.setTo(1.2, 0.25);
-ledge.body.immovable = true;
+floatleftpiece = platforms.create(game.world.width - 260, 170, 'floatleftpiece');
+floatleftpiece.scale.setTo(0.4, 0.35);
+floatleftpiece.body.immovable = true;
+
+floatcenterpiece = platforms.create(game.world.width -210, 170, 'floatcenterpiece');
+floatcenterpiece.scale.setTo(0.4, 0.35);
+floatcenterpiece.body.immovable = true;
+
+ floatrightpiece = platforms.create(game.world.width - 160, 170, 'floatrightpiece');
+floatrightpiece.scale.setTo(0.4, 0.35);
+floatrightpiece.body.immovable = true;
 
 
 
 // Lower Ledge
-ledge = platforms.create(100, 420, 'cntrpc');
+/*ledge = platforms.create(100, 420, 'cntrpc');
 ledge.scale.setTo(1.2, 0.25);
 ledge.body.immovable = true;
+*/
+
+floatleftpiece = platforms.create(100, 420, 'floatleftpiece');
+floatleftpiece.scale.setTo(0.4, 0.35);
+floatleftpiece.body.immovable = true;
+
+floatcenterpiece = platforms.create(150, 420, 'floatcenterpiece');
+floatcenterpiece.scale.setTo(0.4, 0.35);
+floatcenterpiece.body.immovable = true;
+
+floatrightpiece = platforms.create(200, 420, 'floatrightpiece');
+floatrightpiece.scale.setTo(0.4, 0.35);
+floatrightpiece.body.immovable = true;
 
 // Lower Mirrored ledge
-
+/*
 ledge = platforms.create(game.world.width - 260, 420, 'cntrpc');
 ledge.scale.setTo(1.2, 0.25);
 ledge.body.immovable = true;
+*/
 
+floatleftpiece = platforms.create(game.world.width - 260, 420, 'floatleftpiece');
+floatleftpiece.scale.setTo(0.4, 0.35);
+floatleftpiece.body.immovable = true;
 
+floatcenterpiece = platforms.create(game.world.width -210, 420, 'floatcenterpiece');
+floatcenterpiece.scale.setTo(0.4, 0.35);
+floatcenterpiece.body.immovable = true;
 
+ floatrightpiece = platforms.create(game.world.width - 160, 420, 'floatrightpiece');
+floatrightpiece.scale.setTo(0.4, 0.35);
+floatrightpiece.body.immovable = true;
 //Decorations:
 
 //Mushrooms
@@ -161,6 +267,17 @@ pinkmushroom.scale.setTo(0.4, 0.4);
 var orangemushroom = game.add.sprite(100, 393, 'orangemushroom');
 orangemushroom.scale.setTo(0.7, 0.7);
 
+
+//Bushes
+
+var bush = game.add.sprite(255, game.world.height - 70, 'bush1');
+bush.scale.setTo(0.6, 0.6);
+
+bush = game.add.sprite(240, game.world.height - 57, 'bush4');
+bush.scale.setTo(0.6, 0.6);
+
+bush = game.add.sprite(270, game.world.height - 57, 'bush4');
+bush.scale.setTo(0.6, 0.6);
 
     player = game.add.sprite(playerStartX, game.world.height - playerStartY, 'dude');
     game.physics.arcade.enable(player);
