@@ -9,9 +9,10 @@ var player;
 var playerStartX = 600;
 var playerStartY = 385;
 var recordedID = 0;
-var playerLives = 2;
+var playerLives = 5;
 var hitTimer = 0;
 var stunnedTimer = 0;
+var resetTimer = 0;
 var playerHitFrom = 0;
 var hurlPlayerOnce = 0;
 
@@ -37,6 +38,15 @@ var lastPlayerFacingDir = 0;
 var debugVar = 0;
 var playerMoved = 0;
 var playerMovedLivesSent = 0;
+var jumpVelocity = -400;
+var moveVelocity = 250;
+var slideVelocity = 3;
+var gravity = 500;
+var attackSpeed = 400;
+var attackFrameRate = 15;
+var attackJumpFrameRate = 19;
+var stunnedTime = 1000;
+var winnerText = 0;
 
 function randomInt (low, high) {
     return Math.floor(Math.random() * (high - low) + low);
@@ -89,15 +99,16 @@ function createLevel() {
     backgroundmusic.loop = true;
     backgroundmusic.play();
 
-    game.physics.startSystem(Phaser.Physics.ARCADE);
-    game.add.sprite(0, 0, 'niceforestbg');
-
     platforms = game.add.group();
     platforms.enableBody = true;
 
+    game.time.events.repeat(Phaser.Timer.SECOND * 10, 1, createSmallCloud, this);    
+    game.time.events.repeat(Phaser.Timer.SECOND * 20, 3, createMediumCloud, this);      
+    game.time.events.repeat(Phaser.Timer.SECOND * 40, 40, createSmallCloud, this);
+    game.time.events.repeat(Phaser.Timer.SECOND * 40, 40, createMediumCloud, this);
 
     //Bottom tree
-    var darktree = game.add.sprite(-0.5, game.world.height - 180, 'darktree');
+    var darktree = game.add.sprite(500, game.world.height - 180, 'darktree');
     darktree.scale.setTo(0.5, 0.5);
 
     //Bottom Layer
@@ -132,71 +143,6 @@ function createLevel() {
     cutesun.scale.setTo(0.3, 0.3);
 
     //Cloud
-
-    var cloud = game.add.sprite(0, 30, 'cloud2');
-    cloud.scale.setTo(0.1, 0.1);
-    game.physics.enable(cloud, Phaser.Physics.ARCADE);
-    cloud.body.velocity.x=50;
-
-    cloud = game.add.sprite(-40, 40, 'cloud2');
-    cloud.scale.setTo(0.1, 0.1);
-    game.physics.enable(cloud, Phaser.Physics.ARCADE);
-    cloud.body.velocity.x=45;
-
-    cloud = game.add.sprite(-4000, 40, 'cloud2');
-    cloud.scale.setTo(0.1, 0.1);
-    game.physics.enable(cloud, Phaser.Physics.ARCADE);
-    cloud.body.velocity.x=45;
-
-    cloud = game.add.sprite(-4000, 40, 'cloud2');
-    cloud.scale.setTo(0.2, 0.2);
-    game.physics.enable(cloud, Phaser.Physics.ARCADE);
-    cloud.body.velocity.x=40;
-
-    cloud = game.add.sprite(-3000, 38, 'cloud2');
-    cloud.scale.setTo(0.2, 0.2);
-    game.physics.enable(cloud, Phaser.Physics.ARCADE);
-    cloud.body.velocity.x=40;
-
-    cloud = game.add.sprite(-1000, 20, 'cloud2');
-    cloud.scale.setTo(0.1, 0.1);
-    game.physics.enable(cloud, Phaser.Physics.ARCADE);
-    cloud.body.velocity.x=55;
-
-    cloud = game.add.sprite(-4000, 20, 'cloud2');
-    cloud.scale.setTo(0.1, 0.1);
-    game.physics.enable(cloud, Phaser.Physics.ARCADE);
-    cloud.body.velocity.x=55;
-
-    cloud = game.add.sprite(-600, 0, 'cloud2');
-    cloud.scale.setTo(0.1, 0.1);
-    game.physics.enable(cloud, Phaser.Physics.ARCADE);
-    cloud.body.velocity.x=27;
-
-    cloud = game.add.sprite(-1600, 0, 'cloud2');
-    cloud.scale.setTo(0.1, 0.1);
-    game.physics.enable(cloud, Phaser.Physics.ARCADE);
-    cloud.body.velocity.x=27;
-
-    cloud = game.add.sprite(-700, 15, 'cloud2');
-    cloud.scale.setTo(0.1, 0.1);
-    game.physics.enable(cloud, Phaser.Physics.ARCADE);
-    cloud.body.velocity.x=35;
-
-    cloud = game.add.sprite(0, -10, 'cloud1');
-    cloud.scale.setTo(0.3, 0.3);
-    game.physics.enable(cloud, Phaser.Physics.ARCADE);
-    cloud.body.velocity.x=30;
-
-    cloud = game.add.sprite(-500, -80, 'cloud1');
-    cloud.scale.setTo(0.4, 0.4);
-    game.physics.enable(cloud, Phaser.Physics.ARCADE);
-    cloud.body.velocity.x=20;
-
-    cloud = game.add.sprite(-1500, -75, 'cloud1');
-    cloud.scale.setTo(0.4, 0.4);
-    game.physics.enable(cloud, Phaser.Physics.ARCADE);
-    cloud.body.velocity.x=20;
 
     // Upper Ledge for falling players
 
@@ -310,13 +256,51 @@ function createLevel() {
 
     bush = game.add.sprite(780, game.world.height/2 - 30, 'bush1');
     bush.scale.setTo(0.5, 0.5);
+
+    var cloud = game.add.sprite(0, 10, 'cloud2');
+    game.physics.enable(cloud, Phaser.Physics.ARCADE);
+    cloud.scale.setTo(0.2, 0.2);
+    cloud.body.velocity.x=30;
+ 
+    var cloud = game.add.sprite(0, 10, 'cloud1');
+    game.physics.enable(cloud, Phaser.Physics.ARCADE);
+    cloud.scale.setTo(0.3, 0.3);
+    cloud.body.velocity.x=50;
+ 
+    var cloud = game.add.sprite(-3000, -12, 'cloud1');
+    game.physics.enable(cloud, Phaser.Physics.ARCADE);
+    cloud.scale.setTo(0.3, 0.3);
+    cloud.body.velocity.x=50;
+ 
+    var cloud = game.add.sprite(-6000, 0, 'cloud1');
+    game.physics.enable(cloud, Phaser.Physics.ARCADE);
+    cloud.scale.setTo(0.3, 0.3);
+    cloud.body.velocity.x=60;
+}
+
+function createMediumCloud() {
+    
+        var cloud = game.add.sprite(-50, 0, 'cloud2');
+        game.physics.enable(cloud, Phaser.Physics.ARCADE);
+        cloud.scale.setTo(0.2, 0.2);
+        cloud.body.velocity.x=30;
+}
+    
+function createSmallCloud() {
+    
+
+        var cloud = game.add.sprite(-100, 0, 'cloud2');
+        game.physics.enable(cloud, Phaser.Physics.ARCADE);
+        cloud.scale.setTo(0.1, 0.1);
+        cloud.body.velocity.x=10;
+    
 }
 
 Game.create = function(){
     
-    game.physics.startSystem(Phaser.Physics.P2JS);
-    game.physics.p2.gravity.y = 100;
-    game.physics.p2.restitution = 0.8;
+    //game.physics.startSystem(Phaser.Physics.P2JS);
+    //game.physics.p2.gravity.y = gravity;
+    //game.physics.p2.restitution = 0.8;
     game.world.setBounds(0, 0, 1300, 600);
 
     hitTimer = game.time.create(false);
@@ -326,24 +310,14 @@ Game.create = function(){
     timerSlideRight.start();
     timerSlideLeft = game.time.create(false);
     timerSlideLeft.start();
+    resetTimer = game.time.create(false);
+    resetTimer.stop();
 
     //add space key 
     this.spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.add.sprite(0, 0, 'niceforestbg');
-
-    //create hearts in upper left of screen
-    hearts[0] = game.add.sprite(10, 10, 'heart');    
-    hearts[0].fixedToCamera = true;
-    hearts[1] = game.add.sprite(70, 10, 'heart');
-    hearts[1].fixedToCamera = true; 
-    hearts[2] = game.add.sprite(130, 10, 'heart'); 
-    hearts[2].fixedToCamera = true;
-    hearts[3] = game.add.sprite(190, 10, 'heart'); 
-    hearts[3].fixedToCamera = true;
-    hearts[4] = game.add.sprite(250, 10, 'heart'); 
-    hearts[4].fixedToCamera = true;
 
     createLevel();
 
@@ -354,7 +328,7 @@ Game.create = function(){
     game.physics.arcade.enable(player);
     player.body.setSize(260, 430, 130, 40);
     //player.body.bounce.y = 0.1;
-    player.body.gravity.y = 200;
+    player.body.gravity.y = gravity;
     player.body.collideWorldBounds = true;
 
     sHearts[0] = game.add.sprite(player.body.x-5, player.body.y - 10, 'heart'); 
@@ -370,24 +344,29 @@ Game.create = function(){
     
     player.animations.add('slideLeft', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10, true);
     player.animations.add('runLeft', [19, 18, 17, 16, 15, 14, 13, 12, 11, 10], 10, true);
-    player.animations.add('jumpAttackLeft', [29, 28, 27, 26, 25, 24, 23, 22, 21, 20], 10, true);
+    jumpAttackLeft = player.animations.add('jumpAttackLeft', [29, 28, 27, 26, 25, 24, 23, 22, 21, 20], 10, true);
     jumpLeftAnim = player.animations.add('jumpLeft', [39, 38, 37, 36, 35, 34, 33, 32, 31, 30], 10, false);
     player.animations.add('jumpLeftIdle', [30], 10, true);
     player.animations.add('idleLeft', [49, 48, 47, 46, 45, 44, 43, 42, 41, 40], 10, true);
     deadLeftAnim = player.animations.add('deadLeft', [59, 58, 57, 56, 55, 54, 53, 52, 51, 50], 10, false);
-    player.animations.add('attackLeft', [66, 65, 64, 63, 62, 61, 60], 7, true);
+    attackLeft = player.animations.add('attackLeft', [66, 65, 64, 63, 62, 61, 60], 7, true);
     player.animations.add('stunnedLeft', [59], 10, true);
     player.animations.add('slideRight', [130, 131, 132, 133, 134, 135, 136, 137, 138, 139], 10, true);
     player.animations.add('runRight', [120, 121, 122, 123, 124, 125, 126, 127, 128, 129], 10, true);
-    player.animations.add('jumpAttackRight', [110, 111, 112, 113, 114, 115, 116, 117, 118, 119], 10, true);
+    jumpAttackRight = player.animations.add('jumpAttackRight', [110, 111, 112, 113, 114, 115, 116, 117, 118, 119], 10, true);
     jumpRightAnim = player.animations.add('jumpRight', [100, 101, 102, 103, 104, 105, 106, 107, 108, 109], 10, false);
     player.animations.add('jumpRightIdle', [109], 10, true);
     player.animations.add('idleRight', [90, 91, 92, 93, 94, 95, 96, 97, 98, 99], 10, true);
     deadRightAnim = player.animations.add('deadRight', [80, 81, 82, 83, 84, 85, 86, 87, 88, 89], 10, false);
-    player.animations.add('attackRight', [73, 74, 75, 76, 77, 78, 79], 7, true);
+    attackRight = player.animations.add('attackRight', [73, 74, 75, 76, 77, 78, 79], 7, true);
     player.animations.add('stunnedRight', [80], 10, true);
-    player.animations.add('angelWings', [0], 10, true);
+    player.animations.add('angelWings', [140], 10, true);
     
+    jumpAttackLeft.speed = attackJumpFrameRate;
+    attackLeft.speed = attackFrameRate;
+    jumpAttackRight.speed = attackJumpFrameRate;
+    attackRight.speed = attackFrameRate;
+
 	Game.playerMap = {};	
     Client.askNewPlayer(playerStartX, game.world.height - playerStartY, playerName, playerNameTextColor);
 
@@ -397,11 +376,23 @@ Game.create = function(){
     playerNameText.anchor.setTo(0.5, 0.5);  
     //showSafe();
       
-    setInterval(sendPosition, 10);
+    //create hearts in upper left of screen
+    hearts[0] = game.add.sprite(10, 550, 'heart');    
+    hearts[0].fixedToCamera = true;
+    hearts[1] = game.add.sprite(70, 550, 'heart');
+    hearts[1].fixedToCamera = true; 
+    hearts[2] = game.add.sprite(130, 550, 'heart'); 
+    hearts[2].fixedToCamera = true;
+    hearts[3] = game.add.sprite(190, 550, 'heart'); 
+    hearts[3].fixedToCamera = true;
+    hearts[4] = game.add.sprite(250, 550, 'heart'); 
+    hearts[4].fixedToCamera = true;
+
+    //setInterval(sendPosition, 1);
 };
 
 Game.render = function() {
-    
+    /*
     game.debug.text('number of phantoms in game: ' + debugVar, 100, 380 );
     game.debug.text('id of this player ' + recordedID, 100, 390 );
     game.debug.text('time until you can hit ' + hitTimer.ms , 100, 400 );
@@ -410,20 +401,25 @@ Game.render = function() {
     game.debug.text('player jumped: ' + playerJumped, 100, 430);
     game.debug.text('player jumpLeftIdle: ' + playJumpLeftIdleAnim, 100, 440);
     game.debug.text('player timerslideright: ' + timerSlideRight.ms, 100, 450);
-    game.debug.text('playermoved id: ' + playerMoved + ' lives sent: ' + playerMovedLivesSent, 100, 460);
+    game.debug.text('playermoved id: ' + playerMoved + ' lives sent: ' + playerMovedLivesSent, 100, 460);*/
 }
 
 Game.update = function() {
 
     game.physics.arcade.collide(player, platforms);
 
-    if (playerLives > 0) {
+    if (resetTimer.ms > 5000) {
+        winnerText.destroy();
+        resetTimer.stop();
+    }
+
+    if (playerLives > 0 && resetTimer.ms == 0) {
         if (stunnedTimer.ms == 0) {
-            if (hitTimer.ms > 1000)
+            if (hitTimer.ms > attackSpeed)
                 playerIsAttacking = 0;
                 
             if (slideRight == 1) {
-                player.body.x += 2;
+                player.body.x += slideVelocity;
                 playerFacingDir = 10;
                 player.animations.play('slideRight');
                 playerNameText.x = player.body.x + 16;
@@ -433,7 +429,7 @@ Game.update = function() {
                 sHearts[2].x = player.body.x+15; sHearts[2].y = player.body.y - 10;
                 sHearts[3].x = player.body.x+25; sHearts[3].y = player.body.y - 10;
                 sHearts[4].x = player.body.x+35; sHearts[4].y = player.body.y - 10;
-
+                sendPosition();
                 if (timerSlideRight.ms > 500) {
                     slideRight = 0;
                 }
@@ -441,7 +437,7 @@ Game.update = function() {
             }
 
             if (slideLeft == 1) {
-                player.body.x -= 2;
+                player.body.x -= slideVelocity;
                 playerFacingDir = 0;
                 player.animations.play('slideLeft');
                 playerNameText.x = player.body.x + 16;
@@ -451,7 +447,7 @@ Game.update = function() {
                 sHearts[2].x = player.body.x+15; sHearts[2].y = player.body.y - 10;
                 sHearts[3].x = player.body.x+25; sHearts[3].y = player.body.y - 10;
                 sHearts[4].x = player.body.x+35; sHearts[4].y = player.body.y - 10;
-
+                sendPosition();
                 if (timerSlideLeft.ms > 500) {
                     slideLeft = 0;
                 }
@@ -478,7 +474,7 @@ Game.update = function() {
                 if (playerIsAttacking == 1 && playerIsOnGround == 1)
                     player.body.velocity.x = 0;
                 else
-                    player.body.velocity.x = -150;
+                    player.body.velocity.x = -moveVelocity;
                 if (playerIsAttacking == 0 && playerIsOnGround == 1) {
                     playerFacingDir = 1;
                     player.animations.play('runLeft');
@@ -518,7 +514,7 @@ Game.update = function() {
                 if (playerIsAttacking == 1 && playerIsOnGround == 1)
                     player.body.velocity.x = 0;
                 else
-                    player.body.velocity.x = 150;
+                    player.body.velocity.x = moveVelocity;
                 if (playerIsAttacking == 0 && playerIsOnGround == 1) {
                     playerFacingDir = 11;
                     player.animations.play('runRight');
@@ -538,6 +534,9 @@ Game.update = function() {
                     if (jumpRightAnim.isFinished)
                         playJumpRightIdleAnim = 1;
                 }
+
+                if (cursors.up.isDown && player.body.touching.down)
+                    player.body.velocity.x = 0;
             }
             else
             {
@@ -556,7 +555,7 @@ Game.update = function() {
             
             if (this.spaceKey.isDown) {
                 
-                if (hitTimer.ms > 1000) {
+                if (hitTimer.ms > attackSpeed) {
                     hitTimer.stop();
                     hitTimer.start();
 
@@ -578,12 +577,12 @@ Game.update = function() {
                     //check if other players are in range of hitting
                     for(var i = 0; i < Object.keys(Game.playerMap).length; i++){
                         if (playerCurrentFacing == 1) {
-                            if (Game.playerMap[i].x < (player.body.x + 64) && Game.playerMap[i].x > (player.body.x + 16) && Game.playerMap[i].y < (player.body.y + 24) && Game.playerMap[i].y > (player.body.y - 24)) {
+                            if (Game.playerMap[i].x < (player.body.x + 40) && Game.playerMap[i].x > (player.body.x + 10) && Game.playerMap[i].y < (player.body.y + 20) && Game.playerMap[i].y > (player.body.y - 20)) {
                                 //send player hit
                                 Client.hitPlayer(i, 3);
                             }
                         } else if (playerCurrentFacing == -1) {
-                            if (Game.playerMap[i].x > (player.body.x - 64) && Game.playerMap[i].x < (player.body.x - 16) && Game.playerMap[i].y < (player.body.y + 24) && Game.playerMap[i].y > (player.body.y - 24)) {
+                            if (Game.playerMap[i].x > (player.body.x - 90) && Game.playerMap[i].x < (player.body.x - 10) && Game.playerMap[i].y < (player.body.y + 20) && Game.playerMap[i].y > (player.body.y - 20)) {
                                 //send player hit
                                 Client.hitPlayer(i, 2);
                             }
@@ -595,7 +594,7 @@ Game.update = function() {
             if (cursors.up.isDown && player.body.touching.down)
             {
                 if (playerIsAttacking == 0) {
-                    player.body.velocity.y = -350;
+                    player.body.velocity.y = jumpVelocity;
                     playerIsOnGround = 0;
                     playerJumped = 1;
                     playJumpRightIdleAnim = 0;
@@ -614,8 +613,8 @@ Game.update = function() {
 
             if (playerHitFrom == 2) {
                 if (hurlPlayerOnce == 0) {
-                    player.body.velocity.x = -200;
-                    player.body.velocity.y = -200;
+                    player.body.velocity.x = -300;
+                    player.body.velocity.y = -300;
                     hurlPlayerOnce = 1;
                 }
 
@@ -623,8 +622,8 @@ Game.update = function() {
                 player.animations.play('stunnedLeft');
             } else if (playerHitFrom == 3) {
                 if (hurlPlayerOnce == 0) {
-                    player.body.velocity.x = 200;
-                    player.body.velocity.y = -200;
+                    player.body.velocity.x = 300;
+                    player.body.velocity.y = -300;
                     hurlPlayerOnce = 1;
                 }
 
@@ -632,7 +631,7 @@ Game.update = function() {
                 player.animations.play('stunnedRight');
             }
 
-            if (stunnedTimer.ms > 2000) {
+            if (stunnedTimer.ms > stunnedTime) {
                 hurlPlayerOnce = 0;
                 stunnedTimer.stop();
                 playerHitFrom = 0;
@@ -653,13 +652,16 @@ Game.update = function() {
             playDeadOnce = 1;
         }
 
+        /*
         if (playerCurrentFacing == 1 && deadRightAnim.isFinished) {
             playerFacingDir = 99;
             player.animations.play('angelWings');
         } else if (playerCurrentFacing == -1 && deadLeftAnim.isFinished) {
             playerFacingDir = 99;
             player.animations.play('angelWings');
-        }
+        }*/
+        playerFacingDir = 99;
+        player.animations.play('angelWings');
     
     }
     
@@ -678,6 +680,7 @@ Game.update = function() {
         hearts[n].alpha = 0;
 
     debugVar = Object.keys(Game.playerMap).length;
+    sendPosition();
 }
 
 function whichPlayerGotHit(id, hitFrom) {
@@ -698,14 +701,22 @@ function resetRound(winnerName) {
     //player.body.x = 100;
     //player.body.y = 100;
     
-    playerLives = 2;
+    playerLives = 5;
+    playerFacingDir = 99;
+    playDeadOnce = 1;
     //Client.sendPos(player.body.x - 20,player.body.y - 5, recordedID, playerFacingDir, playerLives);
 
     for (var i = 0; i < 5; i++)
         sHearts[i].alpha = 100;
     for (var n = 0; n < 5; n++)
         hearts[n].alpha = 100;
-    
+
+    winnerText = this.game.add.text(game.camera.width / 2, game.camera.height / 2, "player " + winnerName + " survived the longest!", {font: "30px Arial", fill: "#ffffff", stroke: '#000000', strokeThickness: 3});
+    winnerText.anchor.setTo(0.5, 0.5);
+    winnerText.fixedToCamera = true;        
+
+    resetTimer.stop();
+    resetTimer.start();
 }
 
 function sendPosition() {
@@ -734,23 +745,28 @@ Game.addNewPlayer = function(id,x,y, playerNameIn, playerNameTextColorIn){
     Game.playerMap[id].hearts[4].scale.setTo(0.15, 0.15);
     Game.playerMap[id].animations.add('slideLeft', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10, true);
     Game.playerMap[id].animations.add('runLeft', [19, 18, 17, 16, 15, 14, 13, 12, 11, 10], 10, true);
-    Game.playerMap[id].animations.add('jumpAttackLeft', [29, 28, 27, 26, 25, 24, 23, 22, 21, 20], 10, true);
-    Game.playerMap[id].animations.add('jumpLeft', [39, 38, 37, 36, 35, 34, 33, 32, 31, 30], 10, false);
+    jumpAttackLeft = Game.playerMap[id].animations.add('jumpAttackLeft', [29, 28, 27, 26, 25, 24, 23, 22, 21, 20], 10, true);
+    jumpLeftAnim = Game.playerMap[id].animations.add('jumpLeft', [39, 38, 37, 36, 35, 34, 33, 32, 31, 30], 10, false);
     Game.playerMap[id].animations.add('jumpLeftIdle', [30], 10, true);
     Game.playerMap[id].animations.add('idleLeft', [49, 48, 47, 46, 45, 44, 43, 42, 41, 40], 10, true);
-    Game.playerMap[id].animations.add('deadLeft', [59, 58, 57, 56, 55, 54, 53, 52, 51, 50], 10, false);
-    Game.playerMap[id].animations.add('attackLeft', [66, 65, 64, 63, 62, 61, 60], 7, true);
+    deadLeftAnim = Game.playerMap[id].animations.add('deadLeft', [59, 58, 57, 56, 55, 54, 53, 52, 51, 50], 10, false);
+    attackLeft = Game.playerMap[id].animations.add('attackLeft', [66, 65, 64, 63, 62, 61, 60], 7, true);
     Game.playerMap[id].animations.add('stunnedLeft', [59], 10, true);
     Game.playerMap[id].animations.add('slideRight', [130, 131, 132, 133, 134, 135, 136, 137, 138, 139], 10, true);
     Game.playerMap[id].animations.add('runRight', [120, 121, 122, 123, 124, 125, 126, 127, 128, 129], 10, true);
-    Game.playerMap[id].animations.add('jumpAttackRight', [110, 111, 112, 113, 114, 115, 116, 117, 118, 119], 10, true);
-    Game.playerMap[id].animations.add('jumpRight', [100, 101, 102, 103, 104, 105, 106, 107, 108, 109], 10, false);
+    jumpAttackRight = Game.playerMap[id].animations.add('jumpAttackRight', [110, 111, 112, 113, 114, 115, 116, 117, 118, 119], 10, true);
+    jumpRightAnim = Game.playerMap[id].animations.add('jumpRight', [100, 101, 102, 103, 104, 105, 106, 107, 108, 109], 10, false);
     Game.playerMap[id].animations.add('jumpRightIdle', [109], 10, true);
     Game.playerMap[id].animations.add('idleRight', [90, 91, 92, 93, 94, 95, 96, 97, 98, 99], 10, true);
-    Game.playerMap[id].animations.add('deadRight', [80, 81, 82, 83, 84, 85, 86, 87, 88, 89], 10, false);
-    Game.playerMap[id].animations.add('attackRight', [73, 74, 75, 76, 77, 78, 79], 7, true);
+    deadRightAnim = Game.playerMap[id].animations.add('deadRight', [80, 81, 82, 83, 84, 85, 86, 87, 88, 89], 10, false);
+    attackRight = Game.playerMap[id].animations.add('attackRight', [73, 74, 75, 76, 77, 78, 79], 7, true);
     Game.playerMap[id].animations.add('stunnedRight', [80], 10, true);
-    Game.playerMap[id].animations.add('angelWings', [0], 10, true);
+    Game.playerMap[id].animations.add('angelWings', [140], 10, true);
+    
+    jumpAttackLeft.speed = attackJumpFrameRate;
+    attackLeft.speed = attackFrameRate;
+    jumpAttackRight.speed = attackJumpFrameRate;
+    attackRight.speed = attackFrameRate;
     
     
     //Game.playerMap[id].textHeight = playerNameTextHeightIn;
