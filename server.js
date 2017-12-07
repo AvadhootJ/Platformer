@@ -8,6 +8,7 @@ var timerlength = 10;
 var countdownTimer = timerlength;
 var totalNumberOfPlayers = 0;
 var whichSafeHouseIsSafe = 0;
+var PlayerBase = [];
 
 setInterval(updateTimer, 1000);
 
@@ -28,60 +29,83 @@ server.listen(process.env.PORT || 8080,function(){
 io.on('connection',function(socket){    
         
     socket.on('newplayer',function(data){
-        /*
         totalNumberOfPlayers++;
-        //if very first player, start countdown for very first time
-        if (totalNumberOfPlayers > 0 && firstPlayerJoined == 0) {
-            //console.log('very first player joined');
-            countdownTimer = timerlength;
-            firstPlayerJoined = 1;
-        } else {
-            //console.log('a new player joined');            
-        }*/
-
-        socket.player = {id: server.lastPlayderID++,x: -50,y: -50, playerNameIn:data.playerNameOut, playerNameTextHeightIn:data.playerNameTextHeightOut, playerNameTextColorIn:data.playerNameTextColorOut};
+        
+        socket.player = {id: server.lastPlayderID++,x: -50,y: -50, playerNameIn:data.playerNameOut, playerNameTextColorIn:data.playerNameTextColorOut};
+        PlayerBase[server.lastPlayderID - 1] = socket.player;
+        PlayerBase[server.lastPlayderID - 1].lives = 0;
 
         socket.emit('allplayers',getAllPlayers()); //send newly connected player the list of already connected players
         console.log('new player with id: ' + socket.player.id);
         socket.emit('setID', socket.player); //send just to client
         socket.broadcast.emit('newplayer',socket.player); //send message to all connected sockets except socket that triggered new connection
-        /*
-        socket.on('sendFacingDir', function(data){
-            //console.log(socket.player.id + ':' + data.dir);
-            socket.broadcast.emit('receiveFacingDir',data);
-        });*/
 
         socket.on('hitPlayer', function(data) {
             //console.log('player ' + data.id + ' got hit!');
-            socket.broadcast.emit('playerGotHit',data.id, data.hitFrom); //send message to all connected sockets except socket that triggered new connection            
+            PlayerBase[data.id].lives--;
+
+            var firstAlivePlayer = -1;
+            var secondAlivePlayer = -1;
+    
+            console.log('playerbase length ' + PlayerBase.length);
+            for (var i = 0; i < PlayerBase.length; i++) {
+                console.log('player id: ' + i + ' has lives: ' + PlayerBase[i].lives);
+                if (PlayerBase[i].lives > 0) {
+                    if (firstAlivePlayer == -1) {
+                        firstAlivePlayer = i;
+                        continue;
+                    }
+    
+                    if (firstAlivePlayer > -1) {
+                        secondAlivePlayer = i;
+                    }
+                }
+            }
+
+            if (firstAlivePlayer > -1 && secondAlivePlayer == -1) {
+                console.log('reset round with winner: ' + PlayerBase[firstAlivePlayer].playerNameIn);
+                for (var i = 0; i < PlayerBase.length; i++) {
+                    PlayerBase[i].lives = 0;
+                }
+                
+                socket.emit('resetRound', PlayerBase[firstAlivePlayer].playerNameIn); //send just to client
+                socket.broadcast.emit('resetRound', PlayerBase[firstAlivePlayer].playerNameIn);
+            } else {
+                socket.broadcast.emit('playerGotHit',data.id, data.hitFrom); //send message to all connected sockets except socket that triggered new connection                            
+            }
         });
 
         socket.on('sendPos',function(data){
+            //console.log('playermoved: ' + data.id + ' lives sent: ' + data.thisPlayerLives);
             //console.log('accepted player' + socket.player.id);
             //console.log(', id: ' + data.id + ' face: ' + data.facingDir);
+            PlayerBase[data.id].x = data.x;
+            PlayerBase[data.id].y = data.y;
+            PlayerBase[data.id].facingDir = data.facingDir;
+            PlayerBase[data.id].lives = data.thisPlayerLives;
+
             socket.player.x = data.x;
             socket.player.y = data.y;
             socket.player.id = data.id;
             socket.player.facingDir = data.facingDir;
+            socket.player.lives = data.thisPlayerLives;
             io.emit('move',socket.player);
         });
 
         socket.on('disconnect',function(){
-            io.emit('remove',socket.player.id);
-            /*
             totalNumberOfPlayers--;
-            //console.log('player left game');
-            if (totalNumberOfPlayers == 0 && firstPlayerJoined == 1) {
-                //console.log('last player has left the game');
-                countdownTimer = timerlength;
-                firstPlayerJoined = 0;
-            }*/
+            io.emit('remove',socket.player.id);
+            PlayerBase[socket.player.id].x = -50;
+            PlayerBase[socket.player.id].y = -50;
+            PlayerBase[socket.player.id].lives = 0;
+
+            if (totalNumberOfPlayers == 0) {
+                PlayerBase = [];
+                server.lastPlayderID = 0;
+            }
         });
     });
 
-    //socket.on('test',function(){
-    //    console.log('test received');
-    //});
 });
 
 function updateTimer() {
@@ -98,12 +122,12 @@ function updateTimer() {
 }
 
 function getAllPlayers(){
-    var players = [];
-    Object.keys(io.sockets.connected).forEach(function(socketID){
-        var player = io.sockets.connected[socketID].player;
-        if(player) players.push(player);
-    });
-    return players;
+    //ar players = [];
+    //Object.keys(io.sockets.connected).forEach(function(socketID){
+    //    var player = io.sockets.connected[socketID].player;
+    //    if(player) players.push(player);
+    //});
+    return PlayerBase;
 }
 
 function randomInt (low, high) {
